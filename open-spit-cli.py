@@ -15,7 +15,7 @@ while True:
         break
 
     elif connect_or_host == 'host':
-        host = gethostname()
+        host = socket.gethostname()
         port = 8888
         max_connections = 1
         s = socket.socket()

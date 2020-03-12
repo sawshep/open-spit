@@ -3,6 +3,7 @@ from tkinter import *
 from threading import Thread
 from sys import exit
 from requests import get
+import PyQt5
 
 def ready():
     out_ready_t.start()

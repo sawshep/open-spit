@@ -34,12 +34,12 @@ print(deck)
 pile_number = {}
 cards_in_pile = {}
 
-for p in range(1, 5):
-    for c in range(1, 5):
-        if c == 5:#BROKEN!!!!!!!!!
-            cards_in_pile[deck[0]] = True
-        else:
-            cards_in_pile[deck[0]] = False
+#number of piles in front of player
+for p in range(1, 6):
+    cards_in_pile[deck[0]] = True
+    del deck[0]
+    for c in range(1, p):
+        cards_in_pile[deck[0]] = False
         del deck[0]
     pile_number[p] = cards_in_pile
     cards_in_pile = {}
@@ -64,7 +64,10 @@ def main_menu():
             quit()
 
 def hands(x_mod, ini_height, y_mod):
-    pg.draw.rect(window, black, [x * x_mod, ini_height - y_mod, 100, 100])
+    pg.draw.rect(window, black, [int(x * x_mod), ini_height - y_mod, 100, 100])
+
+def piles():
+    pass
 
 def game_loop():
     global y_change_right
@@ -78,6 +81,17 @@ def game_loop():
         held_keys = pg.key.get_pressed()
         if held_keys[pg.K_LEFT]:
             y_change_left = 50
+            if event.key[pg.K_A]:
+                del pile_number[0[0]]
+                print(pile_number)
+            if event.key[pg.K_S]:
+                pass
+            if event.key[pg.K_D]:
+                pass
+            if event.key[pg.K_F]:
+                pass
+            if event.key[pg.K_SPACEBAR]:
+                pass
         else:
             y_change_left = 0
 
@@ -87,8 +101,8 @@ def game_loop():
             y_change_right = 0
 
     window.fill(white)
-    hands(.25, y - 50, y_change_left)
-    hands(.65, y - 50, y_change_right)
+    hands(0.25, y - 50, y_change_left)
+    hands(0.65, y - 50, y_change_right)
 #    decks()
 #    decks()
 

@@ -1,11 +1,24 @@
 colors = ['R', 'G', 'B', 'P']
 
-deck = {}
+cards = []
 for c in colors:
     for n in range(1, 14):
-            deck.append(colors[c] = str(n))
+        deck.append(c, str(n))
 print(deck)
 
-print(deck)
+players = 2
 
-#fix it
+decks_per_player = 5
+
+
+decks = {}
+
+for p in range(players):
+    for d in range(decks_per_player:
+        random.sample()
+        deck
+
+decks = {
+
+
+}

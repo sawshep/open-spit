@@ -32,17 +32,17 @@ shuffle(deck)
 print(deck)
 
 pile_number = {}
-cards_in_pile = {}
+cards_in_pile = []
 
 #number of piles in front of player
 for p in range(1, 6):
-    cards_in_pile[deck[0]] = True
+    cards_in_pile.append((deck[0], True))
     del deck[0]
     for c in range(1, p):
-        cards_in_pile[deck[0]] = False
+        cards_in_pile.append((deck[0], False))
         del deck[0]
     pile_number[p] = cards_in_pile
-    cards_in_pile = {}
+    cards_in_pile = []
 #Make the last card on the pile be true^^^^
 
 print(pile_number)
@@ -66,8 +66,13 @@ def main_menu():
 def hands(x_mod, ini_height, y_mod):
     pg.draw.rect(window, black, [int(x * x_mod), ini_height - y_mod, 100, 100])
 
-def piles():
-    pass
+def piles(x, y):
+    for d in range(1, 6):
+        pg.draw.rect(window, black, [x - d * 5, y - d * 5, 100, 100])
+
+def pick_up(pile):
+    a = pile_number[pile][0]
+    print(a)
 
 def game_loop():
     global y_change_right
@@ -79,32 +84,41 @@ def game_loop():
             quit()
 
         held_keys = pg.key.get_pressed()
-        if held_keys[pg.K_LEFT]:
+        if held_keys[pg.K_LEFT] and not held_keys[pg.K_RIGHT]:
             y_change_left = 50
-            if event.key[pg.K_A]:
-                del pile_number[0[0]]
-                print(pile_number)
-            if event.key[pg.K_S]:
-                pass
-            if event.key[pg.K_D]:
-                pass
-            if event.key[pg.K_F]:
-                pass
-            if event.key[pg.K_SPACEBAR]:
-                pass
+            if held_keys[pg.K_a]:
+                pick_up(1)
+            elif held_keys[pg.K_s]:
+                pick_up(2)
+            elif held_keys[pg.K_d]:
+                pick_up(3)
+            elif held_keys[pg.K_f]:
+                pick_up(4)
+            elif held_keys[pg.K_SPACE]:
+                pick_up(5)
         else:
             y_change_left = 0
 
-        if held_keys[pg.K_RIGHT]:
+        if held_keys[pg.K_RIGHT] and not held_keys[pg.K_LEFT]:
             y_change_right = 50
+            if held_keys[pg.K_a]:
+                pick_up(1)
+            elif held_keys[pg.K_s]:
+                pick_up(2)
+            elif held_keys[pg.K_d]:
+                pick_up(3)
+            elif held_keys[pg.K_f]:
+                pick_up(4)
+            elif held_keys[pg.K_SPACE]:
+                pick_up(5)
         else:
             y_change_right = 0
 
     window.fill(white)
     hands(0.25, y - 50, y_change_left)
     hands(0.65, y - 50, y_change_right)
-#    decks()
-#    decks()
+    piles(100, 100)
+
 
     pg.display.update()
     clock.tick(60)

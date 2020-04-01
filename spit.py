@@ -1,176 +1,242 @@
-import pygame as pg
-import socket
-from threading import Thread
+import pygame
 from random import shuffle
-pg.init()
+
+pygame.init()
 
 #window dimensions, used for calculations too
 width = 1280
 height = 720
 
-#colors
+#sets up window
+window = pygame.display.set_mode((width, height))
+pygame.display.set_caption('Open-Spit')
+
+#Colors, each have a red green and blue value up to 255
 black = (0, 0, 0)
 white = (255, 255, 255)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
 purple = (255, 0, 255)
+    
+#the \u266* numbers are unicode characters for the suits
+suits = [
+    '\u2660',
+    '\u2663',
+    '\u2665',
+    '\u2666'
+]
 
-#the \u266- numbers are unicode characters for the suits
-suits = {
-    'SPADES':'\u2660',
-    'CLUBS':'\u2663',
-    'HEARTS':'\u2665',
-    'DIAMONDS':'\u2666'
-    }
+value_pairs = [
+    (1,'A'),
+    (2,'2'),
+    (3,'3'),
+    (4,'4'),
+    (5,'5'),
+    (6,'6'),
+    (7,'7'),
+    (8,'8'),
+    (9,'9'),
+    (10,'10'),
+    (11,'J'),
+    (12,'Q'),
+    (13,'K')
+]
 
-#make this a list of tuples to preserve the key for future calculations?
-values = {1:'A', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'10', 11:'J', 12:'Q', 13:'K'}
+piles = {
+    0:[],
+    1:[],
+    2:[],
+    3:[],
+    4:[],
+}
+
+hands = {
+    'r':None,
+    'l':None,
+}
 
 
+
+#Framework to make cards, each has a numerical value, a face value, a suit, and is flipped up/down
+class MakeCard:
+    def __init__(self, value_pair, suit):
+    #Makes variables that only apply to the class equal the parameters
+        #Numerical value for calculations
+        self.value = value_pair[0]
+        #Face value for player to see
+        self.face = value_pair[1]
+        self.suit = suit
+        #Whether the face of the card is visible
+        self.flipped = False
+        
+    def get_value(self):
+        return self.value
+    
+    def get_face(self):
+        return self.face
+    
+    def get_suit(self):
+        return self.suit
+
+    def get_flipped(self):
+        return self.flipped
+    
+    #Takes paramater input later on
+    def set_flipped(self, flipped):
+        self.flipped = flipped
+        
 deck = []
-#fills deck with cards, shuffles
-for s in suits:
-    for v in values:
-        #the values from both values and suits. Might change to a list of tuples in order to preserve numerical value
-        deck.append(values[v] + suits[s])
+#Makes the deck a list of objects
+for suit in suits:
+    for value in value_pairs:
+        deck.append(MakeCard(value, suit))
+        
 shuffle(deck)
-print(deck)
 
-pile_numbers = {}
-cards_in_pile = []
-#number of piles in front of player
-for p in range(5):
-    #number of face down cards in each pile
-    for c in range(p):
-        cards_in_pile.append((deck[0], False))
+#Makes the piles. Inside the main dictionary, there are lists, while inside those there are card objects
+for pile in piles:
+    #Makes it so that every pile has one more card than the last.
+    for card in range(pile + 1):
+        piles[pile].append(deck[0])
         del deck[0]
-    #one face up card on top
-    cards_in_pile.append((deck[0], True))
-    del deck[0]
-    #assigns the cards to a pile and moves to the next
-    pile_numbers[p] = cards_in_pile
-    cards_in_pile = []
+    #Sets the card on the top of the pile face up
+    piles[pile][-1].set_flipped(True)
+    
 
-print(pile_numbers)
-
-#sets up window
-window = pg.display.set_mode((width, height))
-pg.display.set_caption('Open-Spit')
-
-quit = False
-
-def display_text(text, x_cord, y_cord):
-    if text[len(text) - 1] == '\u2660' or '\u2663':
+def display_card(text, x_cord, y_cord):
+    if text[1] == '\u2660' or text[1] == '\u2663':
         color = black
-    elif text[len(text) - 1] == '\u2665' or '\u2666':
+    else:
         color = red
-    font = pg.font.Font('freesansbold.ttf', 18)
+    font = pygame.font.Font('./ibm.ttf', 18)
     text_object = font.render(text, True, color, white)
     window.blit(text_object, (x_cord, y_cord))
-
-#Does nothing as of now
-def main_menu():
-    main_menu = True
-    while main_menu:
-        pass
-
-#Draws the player's hands
-def draw_hands(x_mod, y_mod):
-    #the x coordinate is the width times a fraction rounded to a whole number
+    
+def display_hand(x_mod, y_mod, hand):
     x_cord = int(width * x_mod)
-    #the y coordinate is the height minus the y coordinate modifier (this is what makes the hand move) minus 25.
     y_cord = (height - y_mod - 25)
-    pg.draw.rect(window, black, [x_cord, y_cord, 100, 100])
+    pygame.draw.rect(window, black, [x_cord, y_cord, 100, 100])
+    if hands[hand]:
+        if hands[hand].get_flipped:
+            text = hands[hand].get_face() + hands[hand].get_suit()
+            display_card(text, x_cord, y_cord)
+    
+def display_piles(y_cord):   
+    for pile in piles:
+        pile_spacing = width / (len(piles) + 1)
+        x_cord = int((pile_spacing * pile) + pile_spacing)
+        if piles[pile]:
+            pygame.draw.rect(window, black, [x_cord, y_cord, 100, 100])
+            if piles[pile][-1].get_flipped():
+                text = piles[pile][-1].get_face() + piles[pile][-1].get_suit()
+                display_card(text, x_cord, y_cord)
 
-def draw_piles(y_cord):
-    for pile in pile_numbers:
-        #the x coordinate is the width divided by the number of piles plus the width divided by the number of piles (to even out spacing)
-        x_cord = int(((width / (len(pile_numbers) + 1)) * pile) + (width / (len(pile_numbers) + 1)))
-        #int(width * (pile / (len(pile_numbers) + 1)) + 50)
-        pg.draw.rect(window, black, [x_cord, y_cord, 100, 100])
-        #displays the numerical value and suit of the card on the top of the pile
-        display_text(pile_numbers[pile][len(pile_numbers[pile]) - 1][0], x_cord, y_cord)
+#Adds the top card of the selected deck to the selected hand
+def pick_up(pile, hand):
+    hands[hand] = piles[pile][-1]
+    del piles[pile][-1]
 
-#For now this prints the card value and suit in CLI. In the future, this will move the card from the top of the pile to one of the player's hands
-def pick_up(pile):
-    #gets the top card
-    a = pile_numbers[pile][len(pile_numbers[pile]) - 1]
-    print(a)
+#Removes the card from the selected hand ands puts it on top of the selected pile
+def put_down(pile, hand):
+    piles[pile].append(hands[hand])
+    hands[hand] = None
+
+    
+quit = False
 
 def game_loop():
     #makes the hand_mod vars global so they can be used in other functions
     global y_hand_mod_left
     global y_hand_mod_right
+    global key
+    key = False
+    
     #listens for every event
-    for event in pg.event.get():
+    for event in pygame.event.get():
+        
         #quits when the user x's out of the window
-        if event.type == pg.QUIT:
+        if event.type == pygame.QUIT:
             quit = True
+            
         #stores what keys are currently held down
-        held_keys = pg.key.get_pressed()
-
-    #Put this whole thing in a function?:
-        #Detects the modifier key of <
-        #Need to make it so the values are only printed when the card is True
-        if held_keys[pg.K_LEFT] and not held_keys[pg.K_RIGHT]:
+        held_keys = pygame.key.get_pressed()
+        
+        if held_keys[pygame.K_a]:
+            key = True
+            pile = 0
+        elif held_keys[pygame.K_s]:
+            key = True
+            pile = 1
+        elif held_keys[pygame.K_d]:
+            key = True
+            pile = 2
+        elif held_keys[pygame.K_f]:
+            key = True
+            pile = 3
+        elif held_keys[pygame.K_SPACE]:
+            key = True
+            pile = 4
+        
+        if held_keys[pygame.K_LEFT] and not held_keys[pygame.K_RIGHT]:
             #moves the hand up when the button is held
+            hand = 'l'
             y_hand_mod_left = 50
-            if held_keys[pg.K_a]:
-                pick_up(0)
-            elif held_keys[pg.K_s]:
-                pick_up(1)
-            elif held_keys[pg.K_d]:
-                pick_up(2)
-            elif held_keys[pg.K_f]:
-                pick_up(3)
-            elif held_keys[pg.K_SPACE]:
-                pick_up(4)
-        #keeps hand still when not holding <
+            if key:
+                if hands[hand]:
+                    put_down(pile, hand)
+                elif not hands[hand]:
+                    if piles[pile]:
+                        pick_up(pile, hand)
+            elif held_keys[pygame.K_KP0]:
+                if hands[hand]:
+                    if hands[hand].get_flipped == True:
+                        hands[hand].set_flipped(False)
+                    elif hands[hand].get_flipped == False:
+                        hands[hand].set_flipped(True)
         else:
             y_hand_mod_left = 0
 
-        #Detects the modifier key of >
-        #Need to make it so the values are only printed when the card is True
-        if held_keys[pg.K_RIGHT] and not held_keys[pg.K_LEFT]:
+        if held_keys[pygame.K_RIGHT] and not held_keys[pygame.K_LEFT]:
             #moves the hand up when the button is held
+            hand = 'r'
             y_hand_mod_right = 50
-            if held_keys[pg.K_a]:
-                pick_up(0)
-            elif held_keys[pg.K_s]:
-                pick_up(1)
-            elif held_keys[pg.K_d]:
-                pick_up(2)
-            elif held_keys[pg.K_f]:
-                pick_up(3)
-            elif held_keys[pg.K_SPACE]:
-                pick_up(4)
-        #keeps hand still when not holding >
+            if key:
+                if hands[hand]:
+                    put_down(pile, hand)
+                elif not hands[hand]:
+                    if piles[pile]:
+                        pick_up(pile, hand)
+            elif held_keys[pygame.K_KP0]:
+                if hands[hand]:
+                    if hands[hand].get_flipped:
+                        hands[hand].set_flipped(False)
+                    else:
+                        hands[hand].set_flipped(True)
         else:
             y_hand_mod_right = 0
 
+            
     #makes the background white
     window.fill(white)
-
     #draws the piles of cards
-    draw_piles(5/7 * height)
+    display_piles(5/7 * height)
     #draws the player's hands
-    draw_hands(1/3, y_hand_mod_left)
-    draw_hands(2/3, y_hand_mod_right)
+    display_hand(1/3, y_hand_mod_left, 'l')
+    display_hand(2/3, y_hand_mod_right, 'r')
+    
+    if piles[0]:
+        print(piles[0][-1].get_flipped())
+    if hands['l']:
+        print(hands['l'].get_flipped())
 
-    #updates what is draws on screen 60 times every second
-    pg.display.update()
+    #updates screen
+    pygame.display.update()
     #frame rate locked to 60
-    pg.time.Clock().tick(60)
+    pygame.time.Clock().tick(60)
 
 while not quit:
     game_loop()
 
-#quits the game
-pg.quit()
+pygame.quit()
 quit()
-
-#TODO: complete pick_up() so the card is del from pile_numbers[pile]
-    #del pile_numbers[pile][len(pile_numbers) - 1] to get rid of card on top
-    #ALSO: make it so cards only show the numerical value when they are True
-    #ALSO ALSO: make it so the cards are colored properly with their suit in the game window

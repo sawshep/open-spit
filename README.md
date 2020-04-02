@@ -1,6 +1,6 @@
 # (WIP) The card game Spit recreated to be online multiplayer with PyGame
 
-How to play:
+# How to play:
   Spit is a 2-player, reflex-based game.
   It is sort of similar to a multiplayer Solitaire.
   Each player has 5 piles of cards in front of them.
@@ -11,3 +11,10 @@ How to play:
   If you play all the cards from a pile, you may place another card face-up in that location.
   When you and your opponent run out of cards, both draw a card from their auxilary decks and places it on the center piles, respectively.
   When you run out of cards in your piless, slap the smaller center deck. This is then added to your auxilary deck, which you create new piles from for the next round.
+
+# Controls:
+  Hold the Left or Right arrow to enter pick-up/put-down mode.
+  Press A, S, D, F, or Spacebar to pick-up/put-down a card from/on decks 1-5, respectively.
+  
+  Hold Keypad 0 to enter flip mode.
+  Press A, S, D, F, or Spacebar to flip up a face-down card from piles 1-5, respectively.

@@ -256,3 +256,5 @@ while not quit:
 
 pygame.quit()
 quit()
+
+#TODO: Add client piles, allow functions to work by selecting client/server data structures instead of parts of said structures.

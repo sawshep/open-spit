@@ -1,4 +1,7 @@
-# (WIP) The card game Spit recreated to be online multiplayer with PyGame
+# Installation:
+    1. Install Python 3
+    2. Install Pygame
+    3. Run spit.py
 
 # How to play:
     Spit is a 2-player, reflex-based game.

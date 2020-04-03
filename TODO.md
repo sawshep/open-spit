@@ -1,10 +1,12 @@
 # TODO:
-    Allow functions to accept server/client data structures, instead of individual parts of said structures.
-    Logically add client piles.
-    Visually add client piles.
-    Allow mechanic functions to work with both the server and client.
+    Fix window closing bug.
+    Fix wrong suit color bug.
     Implement networking.
 # DONE:
     Go mode OOP
+    Logically  add client piles
+    Allow functions to accept server/client data structures, instead of individual parts of said structures.
+    Visually add client piles.
+    Allow mechanic functions to work with both the server and client.
 # IGNORED:
     Change protocol from UDP back to TCP.

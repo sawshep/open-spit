@@ -1,4 +1,5 @@
 # TODO:
+    Fix only being able to play a card once bug.
     Fix window closing bug.
     Fix wrong suit color bug.
     Implement networking.

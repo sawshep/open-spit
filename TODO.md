@@ -4,7 +4,7 @@
     Fix wrong suit color bug.
     Implement networking.
 # DONE:
-    Go mode OOP
+    More OOP
     Logically  add client piles
     Allow functions to accept server/client data structures, instead of individual parts of said structures.
     Visually add client piles.

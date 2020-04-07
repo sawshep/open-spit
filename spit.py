@@ -1,4 +1,5 @@
 from random import shuffle
+from constants import *
 import pygame
 
 #Starts Pygame
@@ -14,16 +15,6 @@ window = pygame.display.set_mode((window_width, window_height))
 #Sets the caption in the title-bar
 pygame.display.set_caption('Spit')
 
-#Colors: Tuples with RGB values from 0 to 255
-black = (0, 0, 0)
-white = (255, 255, 255)
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
-purple = (255, 0, 255)
-light_blue = (50, 150, 225)
-grey = (115, 115, 115)
-
 #Card size is adaptive to window size
 card_width = int(window_height / 12)
 card_height = int(card_width * 3.5/2.5)
@@ -31,31 +22,6 @@ card_height = int(card_width * 3.5/2.5)
 #Hand size is adaptive to window size
 hand_width = int(window_width / 12)
 hand_height = hand_width
-
-#Unicode characters for suits
-suits = [
-    '\u2660',
-    '\u2663',
-    '\u2665',
-    '\u2666'
-]
-
-#A calculation value and a face value for the cards
-value_pairs = [
-    (1,'A'),
-    (2,'2'),
-    (3,'3'),
-    (4,'4'),
-    (5,'5'),
-    (6,'6'),
-    (7,'7'),
-    (8,'8'),
-    (9,'9'),
-    (10,'10'),
-    (11,'J'),
-    (12,'Q'),
-    (13,'K')
-]
 
 class Card:
     def __init__(self, value_pair, suit):
@@ -66,21 +32,18 @@ class Card:
         self.suit = suit
         #Sets the color of the card
         if self.suit == '\u2660' or self.suit == '\u2663':
-            self.color = black
+            self.color = BLACK
         else:
-            self.color = red
+            self.color = RED
         self.flipped = False
     def display_card(self, x_cord, y_cord):
         text = self.face + self.suit
         #TODO: Make font size adaptive to window size 
         font = pygame.font.Font('./ibm.ttf', 50)
         #Makes the textbox an object
-        text_box = font.render(text, True, self.color, white)
+        text_box = font.render(text, True, self.color, WHITE)
         #Renders the object on the screen
         window.blit(text_box, (x_cord,y_cord))
-
-#Generates every combination of suit and value
-
 
 #Creates list of users. 0 is player, 1 is opponent. The values are words in RAM.
 users = {0:None, 1:None}
@@ -130,10 +93,10 @@ class User:
             if piles[pile]:
                 #Only shows the card if it is flipped up
                 if piles[pile][-1].flipped:
-                    pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
+                    pygame.draw.rect(window, WHITE, [x_cord, y_cord, card_width, card_height])
                     piles[pile][-1].display_card(x_cord, y_cord)
                 else:
-                    pygame.draw.rect(window, light_blue, [x_cord, y_cord, card_width, card_height])
+                    pygame.draw.rect(window, BLUE, [x_cord, y_cord, card_width, card_height])
     def display_hands(self):
         hands = self.hands
         #Horizontal hand spacing is adaptive to window size
@@ -149,7 +112,7 @@ class User:
             else:
                 y_cord = int(window_height - hand_height / 2 - hand_mods[hand])
             #Draws the hand
-            pygame.draw.rect(window, black, [x_cord, y_cord, hand_width, hand_height])
+            pygame.draw.rect(window, BLACK, [x_cord, y_cord, hand_width, hand_height])
             #Displays a card in the hand if there is one
             if hands[hand]:
                 hands[hand].display_card(x_cord, y_cord)
@@ -165,18 +128,23 @@ class User:
         y_cord = int(window_height * y_frac - card_height / 2)
         #Only displays the center pile if there is a card in it
         if self.center_pile:
-            pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
+            pygame.draw.rect(window, WHITE, [x_cord, y_cord, card_width, card_height])
             self.center_pile[-1].display_card(x_cord, y_cord)
+
+    def mechanics(self):
+        pass
 
 playing = True
 while playing:
     deck = []
-    for suit in suits:
-        for value_pair in value_pairs:
+    for suit in SUITS:
+        for value_pair in VALUE_PAIRS:
             deck.append(Card(value_pair, suit))
     shuffle(deck)
+
     player = User(0)
     opponent = User(1)
+
     while 1:
         #Listens for every event
         for event in pygame.event.get():
@@ -186,8 +154,11 @@ while playing:
                 #Stops Python
                 exit()
 
+        player.mechanics()
+        opponent.mechanics()
+
         #These are self explanatory
-        window.fill(grey)
+        window.fill(GRAY)
 
         player.display_piles()
         opponent.display_piles()

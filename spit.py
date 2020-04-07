@@ -1,16 +1,16 @@
-import pygame
 from random import shuffle
-import socket
+import pygame
 
-#Initiallizes Pygame
+#Starts Pygame
 pygame.init()
 
 #Window resolution
-width = 1280
-height = 960
+window_width = 1280
+window_height = 1000
 
 #Sets the window resoloution
-window = pygame.display.set_mode((width, height))
+global window
+window = pygame.display.set_mode((window_width, window_height))
 #Sets the caption in the title-bar
 pygame.display.set_caption('Spit')
 
@@ -23,6 +23,14 @@ blue = (0, 0, 255)
 purple = (255, 0, 255)
 light_blue = (50, 150, 225)
 grey = (115, 115, 115)
+
+#Card size is adaptive to window size
+card_width = int(window_height / 12)
+card_height = int(card_width * 3.5/2.5)
+
+#Hand size is adaptive to window size
+hand_width = int(window_width / 12)
+hand_height = hand_width
 
 #Unicode characters for suits
 suits = [
@@ -49,241 +57,148 @@ value_pairs = [
     (13,'K')
 ]
 
-#Framework for cards
 class Card:
-    #Makes local variables equal the parameters
-    def __init__(self, value_pair, suit):    
-        #Numerical value for calcs
+    def __init__(self, value_pair, suit):
+        #The value is the numerical value used for calculations
         self.value = value_pair[0]
-        #Face value for graphics
+        #The face value is the number or letter shown to user
         self.face = value_pair[1]
         self.suit = suit
-        #Whether the face of the card is visible
+        #Sets the color of the card
+        if self.suit == '\u2660' or self.suit == '\u2663':
+            self.color = black
+        else:
+            self.color = red
         self.flipped = False
-    def get_value(self):
-        return self.value
-    def get_face(self):
-        return self.face
-    def get_suit(self):
-        return self.suit
-    def get_flipped(self):
-        return self.flipped
-    #Takes paramater input later on
-    def set_flipped(self, flipped):
-        self.flipped = flipped
+    def display_card(self, x_cord, y_cord):
+        text = self.face + self.suit
+        #TODO: Make font size adaptive to window size 
+        font = pygame.font.Font('./ibm.ttf', 50)
+        #Makes the textbox an object
+        text_box = font.render(text, True, self.color, white)
+        #Renders the object on the screen
+        window.blit(text_box, (x_cord,y_cord))
 
-#In the future this will simplify the mechanics and graphics
+#Generates every combination of suit and value
+
+
+#Creates list of users. 0 is player, 1 is opponent. The values are words in RAM.
+users = {0:None, 1:None}
 class User:
-    def __init__(self, piles, hands, center_pile):
-        self.piles = piles
-        self.hands = hands
-        self.center_pile = center_pile
-    def get_piles(self):
-        return self.piles
-    def get_hands(self):
-        return self.hands
-    def get_center_pile(self):
-        return self.center_pile
+    def __init__(self, user):
+        users[user] = self
+        #Generates the 5 piles for user
+        self.piles = []
+        self.make_piles()
+        #User's hands start as empty
+        self.hands = {0:None, 1:None}
+        #Draws card for the starting center pile
+        self.center_pile = [deck[0]]
+        del deck[0]
+        #These are used to tell if user is moving their hands
+        self.hand_mods = {0:0, 1:0}
+        
+    def make_piles(self):
+        #For each of the five piles
+        for pile_number in range(5):
+            #Originally there are no cards in the pile
+            pile = []
+            #Then it adds the respective amount of cards based on what pile is iterating
+            for card in range(pile_number + 1):
+                pile.append(deck[0])
+                del deck[0]
+            #Sets the card on top of the pile face up
+            pile[-1].flipped = True
+            #Makes self.piles a list of piles, which are lists of cards
+            self.piles.append(pile)
 
+    def display_piles(self):
+        #Vertical pile spacing is adaptive to screen size
+        if users[0] == self:
+            y_frac = 6/8
+        else:
+            y_frac = 2/8
+        piles = self.piles
+        #Horizontal pile spacing is adaptive to screen size
+        pile_spacing = window_width / 6
+        #All user's piles have the same y value
+        y_cord = int(window_height * y_frac - card_height / 2)
+        #Spaces and centers the piles evenly
+        for pile in range(5):
+            x_cord = int(pile_spacing * pile + pile_spacing - card_width / 2)
+            #Only displays the pile if there is a card in it
+            if piles[pile]:
+                #Only shows the card if it is flipped up
+                if piles[pile][-1].flipped:
+                    pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
+                    piles[pile][-1].display_card(x_cord, y_cord)
+                else:
+                    pygame.draw.rect(window, light_blue, [x_cord, y_cord, card_width, card_height])
+    def display_hands(self):
+        hands = self.hands
+        #Horizontal hand spacing is adaptive to window size
+        hand_spacing = window_width / 3
+        #Changes the vertial postion of the hand to show that is is selected
+        hand_mods = self.hand_mods
+        for hand in hands:
+            #Evenly spaces and centers hands horizontally
+            x_cord = int(hand_spacing * hand + hand_spacing - hand_width / 2)
+            #Displays the hands on the respective side of the screen for each user
+            if users[0] == self:
+                y_cord = int( -1 * hand_height / 2 - hand_mods[hand])
+            else:
+                y_cord = int(window_height - hand_height / 2 - hand_mods[hand])
+            #Draws the hand
+            pygame.draw.rect(window, black, [x_cord, y_cord, hand_width, hand_height])
+            #Displays a card in the hand if there is one
+            if hands[hand]:
+                hands[hand].display_card(x_cord, y_cord)
+    def display_center_pile(self):
+        #Displays the center pile on the correct side of the screen, respectively
+        if users[0] == self:
+            y_frac = 3/5
+        else:
+            y_frac = 2/5
+        #Horizontal center pile position is adaptive to the screen size
+        x_cord = int(window_width / 2 - card_width / 2)
+        #Vertical center pile position is adaptive to the screen size
+        y_cord = int(window_height * y_frac - card_height / 2)
+        #Only displays the center pile if there is a card in it
+        if self.center_pile:
+            pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
+            self.center_pile[-1].display_card(x_cord, y_cord)
 
-def make_user_data():
-    #deck is a list of Card objects made from the values and suits
+playing = True
+while playing:
     deck = []
     for suit in suits:
         for value_pair in value_pairs:
             deck.append(Card(value_pair, suit))
     shuffle(deck)
+    player = User(0)
+    opponent = User(1)
+    while 1:
+        #Listens for every event
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                #Stops Pygame
+                pygame.quit()
+                #Stops Python
+                exit()
 
-    #Creates two users with respective data, one for host and one for client
-    for is_host in [True, False]:
-        piles = []
-        #Every sequential pile in the list of piles has one more card Obj. than the last
-        for pile_number in range(5):
-            pile = []
-            for card in range(pile_number + 1):
-                pile.append(deck[0])
-                del deck[0]
-            #The last card in every pile is flipped up
-            pile[-1].set_flipped(True)
-            piles.append(pile)
-            
-        #For both users, both hands start empty
-        hands = {0:None, 1:None}
-        center_pile = [deck[0]]
-        del deck[0]
-        
-        #TODO: Wrap this in a function?
-        if is_host:
-            global host
-            host = User(piles, hands, center_pile)
-        elif not is_host:
-            global client
-            client = User(piles, hands, center_pile)
-            
-make_user_data()
-quit = False
+        #These are self explanatory
+        window.fill(grey)
 
-def display_card(text, x_cord, y_cord):
-    font = pygame.font.Font('./ibm.ttf', 40)
-    if text[1] == '\u2660' or text[1] == '\u2663':
-        foreground_color = black
-    else:
-        foreground_color = red
-    text_object = font.render(text, True, foreground_color, white)
-    window.blit(text_object, (x_cord,y_cord))
-    
-def display_hand(x_frac, y_mod, hand):
-    x_cord = int(width * x_frac)
-    y_cord = (height - y_mod - 25)
-    pygame.draw.rect(window, black, [x_cord, y_cord, 100, 100])
-    if hand:
-        text = hand.get_face() + hand.get_suit()
-        display_card(text, x_cord, y_cord)
-    
-def display_piles(y_cord, piles):   
-    for pile in range(len(piles)):
-        pile_spacing = width / (len(piles) + 1)
-        x_cord = int(pile_spacing * pile + pile_spacing)
-        if piles[pile]:  
-            if piles[pile][-1].get_flipped():
-                pygame.draw.rect(window, white, [x_cord, y_cord, 100, 100])
-                text = piles[pile][-1].get_face() + piles[pile][-1].get_suit()
-                display_card(text, x_cord, y_cord)
-            else:
-                pygame.draw.rect(window, light_blue, [x_cord, y_cord, 100, 100])
-                
-#Eventually, you will be able to play a card on a center pile.
-def display_center_pile(x_frac, y_frac, user):
-    if user.get_center_pile():
-        x_cord = int(width * x_frac)
-        y_cord = int(height * y_frac)
-        pygame.draw.rect(window, white, [x_cord, y_cord, 100, 100])
-        text = user.get_center_pile()[-1].get_face() + user.get_center_pile()[-1].get_suit()
-        display_card(text, x_cord, y_cord)
-        
-def play_mechanics(user, hand, play_pile):
-    if user.get_hands()[hand]:
-        if abs(user.get_hands()[hand].get_value() - play_pile.get_center_pile()[0].get_value()) == 1 or abs(user.get_hands()[hand].get_value() - play_pile.get_center_pile()[0].get_value()) == 12:
-            play_pile.get_center_pile().append(user.get_hands()[hand])
-            user.get_hands()[hand] = None
+        player.display_piles()
+        opponent.display_piles()
 
-def hand_mechanics(user, hand, pile):
-    #And if user has a card in their selected hand...
-    if user.get_hands()[hand]:
-        #And if there is nothing in the selected pile, or if the value of the card in user's selected hand equals the top card of the selected deck, or the card is face-down
-        if not user.get_piles()[pile] or user.get_hands()[hand].get_value() == user.get_piles()[pile][-1].get_value() or not user.get_piles()[pile][-1].get_flipped():
-            #Adds the card in a selected hand to the top of the selected deck
-            user.get_piles()[pile].append(user.get_hands()[hand])
-            #Clears the selected hand
-            user.get_hands()[hand] = None
-    #And if there is a card in the selected pile, and if the top card on the selected deck is face-up
-    elif not user.get_hands()[hand] and user.get_piles()[pile] and user.get_piles()[pile][-1].get_flipped():
-        #Makes the selected hand hold the top card of the selected deck
-        user.get_hands()[hand] = user.get_piles()[pile][-1]
-        #Deletes the top card from the selected
-        del user.get_piles()[pile][-1]
-        
-#All the logic that controls when certain mechanics should take place. Mainly helps with graphics
-def hand_logic(user):
-    global pile_key
-    pile_key = False
-    global play_key
-    play_key = False
-    
-    held_keys = pygame.key.get_pressed()
-    
-    if held_keys[pygame.K_a]:
-        pile_key = True
-        pile = 0
-    elif held_keys[pygame.K_s]:
-        pile_key = True
-        pile = 1
-    elif held_keys[pygame.K_d]:
-        pile_key = True
-        pile = 2
-    elif held_keys[pygame.K_f]:
-        pile_key = True
-        pile = 3
-    elif held_keys[pygame.K_SPACE]:
-        pile_key = True
-        pile = 4
-    
-    users = [host, client]
-    if held_keys[pygame.K_UP]:
-        play_key = True
-        users.remove(user)
-        play_pile = users[0]
-    elif held_keys[pygame.K_DOWN]:
-        play_key = True
-        play_pile = user
-    
-    global y_hand_mod_left
-    global y_hand_mod_right
-    if held_keys[pygame.K_LEFT] and not held_keys[pygame.K_RIGHT] and not held_keys[pygame.K_KP0]:
-        #moves the hand up when the button is held
-        hand = 0
-        y_hand_mod_left = 50
-        y_hand_mod_right = 0
-        if pile_key:
-            hand_mechanics(user, hand, pile)
-        elif play_key:
-            play_mechanics(user, hand, play_pile)
-            
-    elif held_keys[pygame.K_RIGHT] and not held_keys[pygame.K_LEFT] and not held_keys[pygame.K_KP0]:
-        #moves the hand up when the button is held
-        hand = 1
-        y_hand_mod_left = 0
-        y_hand_mod_right = 50
-        if pile_key:
-            hand_mechanics(user, hand, pile)
-        elif play_key:
-            play_mechanics(user, hand, play_pile)
-            
-    elif held_keys[pygame.K_KP0] and not held_keys[pygame.K_LEFT] and not held_keys[pygame.K_RIGHT]:
-        y_hand_mod_left = 50
-        y_hand_mod_right = 50
-        if pile_key and user.get_piles()[pile]:
-            user.get_piles()[pile][-1].set_flipped(True)
+        player.display_hands()
+        opponent.display_hands()
 
-    else:
-        y_hand_mod_left = 0
-        y_hand_mod_right = 0
-        
-def game_loop():
-    global pile_key
-    pile_key = False
-    
-    #listens for every event
-    for event in pygame.event.get():
-        
-        #quits when the user x's out of the window
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-            
-        hand_logic(host)
-        #hand_logic(client)
-            
-            
-    #makes the background grey
-    window.fill(grey)
-    #draws the users' piles of cards
-    
-    display_piles(6/8 * height, host.get_piles())
-    display_piles(2/8 * height, client.get_piles())
+        player.display_center_pile()
+        opponent.display_center_pile()
 
-    display_hand(1/3, y_hand_mod_left, host.get_hands()[0])
-    display_hand(2/3, y_hand_mod_right, host.get_hands()[1])
-    display_hand(1/3, height + 30, client.get_hands()[0])
-    display_hand(2/3, height + 30, client.get_hands()[1])
-    
-    display_center_pile(1/2, 3/5, host)
-    display_center_pile(1/2, 2/5, client)
-
-    #updates screen
-    pygame.display.update()
-    #frame rate locked to 60
-    pygame.time.Clock().tick(60)
-
-while 1:
-    game_loop()
+        #Makes the changes made above actually show on screen
+        pygame.display.update()
+        #Framerate locked to 60
+        pygame.time.Clock().tick(60)

@@ -59,21 +59,23 @@ value_pairs = [
 
 class Card:
     def __init__(self, value_pair, suit):
+        #The value is the numerical value used for calculations
         self.value = value_pair[0]
+        #The face value is the number or letter shown to user
         self.face = value_pair[1]
         self.suit = suit
+        #Sets the color of the card
+        if self.suit == '\u2660' or self.suit == '\u2663':
+            self.color = black
+        else:
+            self.color = red
         self.flipped = False
     def display_card(self, x_cord, y_cord):
         text = self.face + self.suit
         #TODO: Make font size adaptive to window size 
-        font = pygame.font.Font('./ibm.ttf', 45)
-        #Sets card color based on suit. Doesn't always work
-        if text[1] == '\u2660' or text[1] == '\u2663':
-            color = black
-        else:
-            color = red
+        font = pygame.font.Font('./ibm.ttf', 50)
         #Makes the textbox an object
-        text_box = font.render(text, True, color, white)
+        text_box = font.render(text, True, self.color, white)
         #Renders the object on the screen
         window.blit(text_box, (x_cord,y_cord))
 
@@ -101,25 +103,36 @@ class User:
         self.hand_mods = {0:0, 1:0}
         
     def make_piles(self):
+        #For each of the five piles
         for pile_number in range(5):
+            #Originally there are no cards in the pile
             pile = []
+            #Then it adds the respective amount of cards based on what pile is iterating
             for card in range(pile_number + 1):
                 pile.append(deck[0])
                 del deck[0]
+            #Sets the card on top of the pile face up
             pile[-1].flipped = True
+            #Makes self.piles a list of piles, which are lists of cards
             self.piles.append(pile)
 
     def display_piles(self):
+        #Vertical pile spacing is adaptive to screen size
         if users[0] == self:
             y_frac = 6/8
         else:
             y_frac = 2/8
         piles = self.piles
+        #Horizontal pile spacing is adaptive to screen size
         pile_spacing = window_width / 6
+        #All user's piles have the same y value
         y_cord = int(window_height * y_frac - card_height / 2)
+        #Spaces and centers the piles evenly
         for pile in range(5):
             x_cord = int(pile_spacing * pile + pile_spacing - card_width / 2)
-            if piles[pile]:  
+            #Only displays the pile if there is a card in it
+            if piles[pile]:
+                #Only shows the card if it is flipped up
                 if piles[pile][-1].flipped:
                     pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
                     piles[pile][-1].display_card(x_cord, y_cord)
@@ -127,34 +140,45 @@ class User:
                     pygame.draw.rect(window, light_blue, [x_cord, y_cord, card_width, card_height])
     def display_hands(self):
         hands = self.hands
+        #Horizontal hand spacing is adaptive to window size
         hand_spacing = window_width / 3
+        #Changes the vertial postion of the hand to show that is is selected
         hand_mods = self.hand_mods
         for hand in hands:
+            #Evenly spaces and centers hands horizontally
+            x_cord = int(hand_spacing * hand + hand_spacing - hand_width / 2)
+            #Displays the hands on the respective side of the screen for each user
             if users[0] == self:
-                y_cord = int( -1 * (hand_height / 2) - hand_mods[hand])
-                
+                y_cord = int( -1 * hand_height / 2 - hand_mods[hand])
             else:
                 y_cord = int(window_height - hand_height / 2 - hand_mods[hand])
-            x_cord = int(hand_spacing * hand + hand_spacing - hand_width / 2)
+            #Draws the hand
             pygame.draw.rect(window, black, [x_cord, y_cord, hand_width, hand_height])
+            #Displays a card in the hand if there is one
             if hands[hand]:
-                text = hands[hand].face + hands[hand].suit
-                #display_card(text, x_cord, y_cord)
+                hands[hand].display_card(x_cord, y_cord)
     def display_center_pile(self):
+        #Displays the center pile on the correct side of the screen, respectively
         if users[0] == self:
             y_frac = 3/5
         else:
             y_frac = 2/5
+        #Horizontal center pile position is adaptive to the screen size
         x_cord = int(window_width / 2 - card_width / 2)
+        #Vertical center pile position is adaptive to the screen size
         y_cord = int(window_height * y_frac - card_height / 2)
-        pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
-        self.center_pile[-1].display_card(x_cord, y_cord)
+        #Only displays the center pile if there is a card in it
+        if self.center_pile:
+            pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
+            self.center_pile[-1].display_card(x_cord, y_cord)
 
 def game_loop():
     #listens for every event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            #Stops Pygame
             pygame.quit()
+            #Stops Python
             exit()
 
     #These are self explanatory

@@ -258,7 +258,8 @@ def game_loop():
         
         #quits when the user x's out of the window
         if event.type == pygame.QUIT:
-            quit = True
+            pygame.quit()
+            exit()
             
         hand_logic(host)
         #hand_logic(client)
@@ -284,8 +285,5 @@ def game_loop():
     #frame rate locked to 60
     pygame.time.Clock().tick(60)
 
-while not quit:
+while 1:
     game_loop()
-
-pygame.quit()
-quit()

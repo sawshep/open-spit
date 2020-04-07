@@ -80,11 +80,7 @@ class Card:
         window.blit(text_box, (x_cord,y_cord))
 
 #Generates every combination of suit and value
-deck = []
-for suit in suits:
-	for value_pair in value_pairs:
-		deck.append(Card(value_pair, suit))
-shuffle(deck)
+
 
 #Creates list of users. 0 is player, 1 is opponent. The values are words in RAM.
 users = {0:None, 1:None}
@@ -172,35 +168,37 @@ class User:
             pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
             self.center_pile[-1].display_card(x_cord, y_cord)
 
-def game_loop():
-    #listens for every event
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            #Stops Pygame
-            pygame.quit()
-            #Stops Python
-            exit()
-
-    #These are self explanatory
-    window.fill(grey)
-
-    player.display_piles()
-    opponent.display_piles()
-
-    player.display_hands()
-    opponent.display_hands()
-
-    player.display_center_pile()
-    opponent.display_center_pile()
-
-    #Makes the changes made above actually show on screen
-    pygame.display.update()
-    #frame rate locked to 60
-    pygame.time.Clock().tick(60)
-
 playing = True
 while playing:
+    deck = []
+    for suit in suits:
+        for value_pair in value_pairs:
+            deck.append(Card(value_pair, suit))
+    shuffle(deck)
     player = User(0)
     opponent = User(1)
     while 1:
-        game_loop()
+        #Listens for every event
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                #Stops Pygame
+                pygame.quit()
+                #Stops Python
+                exit()
+
+        #These are self explanatory
+        window.fill(grey)
+
+        player.display_piles()
+        opponent.display_piles()
+
+        player.display_hands()
+        opponent.display_hands()
+
+        player.display_center_pile()
+        opponent.display_center_pile()
+
+        #Makes the changes made above actually show on screen
+        pygame.display.update()
+        #Framerate locked to 60
+        pygame.time.Clock().tick(60)

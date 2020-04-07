@@ -1,7 +1,7 @@
 from random import shuffle
 import pygame
 
-#Initiallizes Pygame
+#Starts Pygame
 pygame.init()
 
 #Window resolution
@@ -9,6 +9,7 @@ window_width = 1280
 window_height = 1000
 
 #Sets the window resoloution
+global window
 window = pygame.display.set_mode((window_width, window_height))
 #Sets the caption in the title-bar
 pygame.display.set_caption('Spit')
@@ -23,10 +24,12 @@ purple = (255, 0, 255)
 light_blue = (50, 150, 225)
 grey = (115, 115, 115)
 
-card_width = window_height * 1/12
+#Card size is adaptive to window size
+card_width = int(window_height / 12)
 card_height = int(card_width * 3.5/2.5)
 
-hand_width = window_width / 12
+#Hand size is adaptive to window size
+hand_width = int(window_width / 12)
 hand_height = hand_width
 
 #Unicode characters for suits
@@ -62,31 +65,40 @@ class Card:
         self.flipped = False
     def display_card(self, x_cord, y_cord):
         text = self.face + self.suit
+        #TODO: Make font size adaptive to window size 
         font = pygame.font.Font('./ibm.ttf', 45)
+        #Sets card color based on suit. Doesn't always work
         if text[1] == '\u2660' or text[1] == '\u2663':
-            foreground_color = black
+            color = black
         else:
-            foreground_color = red
-        text_object = font.render(text, True, foreground_color, white)
-        window.blit(text_object, (x_cord,y_cord))
+            color = red
+        #Makes the textbox an object
+        text_box = font.render(text, True, color, white)
+        #Renders the object on the screen
+        window.blit(text_box, (x_cord,y_cord))
 
+#Generates every combination of suit and value
 deck = []
 for suit in suits:
 	for value_pair in value_pairs:
 		deck.append(Card(value_pair, suit))
 shuffle(deck)
 
+#Creates list of users. 0 is player, 1 is opponent. The values are words in RAM.
 users = {0:None, 1:None}
-
 class User:
     def __init__(self, user):
         users[user] = self
+        #Generates the 5 piles for user
         self.piles = []
         self.make_piles()
+        #User's hands start as empty
         self.hands = {0:None, 1:None}
+        #Draws card for the starting center pile
         self.center_pile = [deck[0]]
-        self.hand_mods = {0:0, 1:0}
         del deck[0]
+        #These are used to tell if user is moving their hands
+        self.hand_mods = {0:0, 1:0}
         
     def make_piles(self):
         for pile_number in range(5):
@@ -138,20 +150,14 @@ class User:
         pygame.draw.rect(window, white, [x_cord, y_cord, card_width, card_height])
         self.center_pile[-1].display_card(x_cord, y_cord)
 
-
-player = User(0)
-opponent = User(1)
-
-
 def game_loop():
-    global window
     #listens for every event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            sys.exit()
+            exit()
 
-
+    #These are self explanatory
     window.fill(grey)
 
     player.display_piles()
@@ -163,10 +169,14 @@ def game_loop():
     player.display_center_pile()
     opponent.display_center_pile()
 
-    #updates screen
+    #Makes the changes made above actually show on screen
     pygame.display.update()
     #frame rate locked to 60
     pygame.time.Clock().tick(60)
 
-while 1:
-    game_loop()
+playing = True
+while playing:
+    player = User(0)
+    opponent = User(1)
+    while 1:
+        game_loop()

@@ -1,7 +1,8 @@
 # TODO:
     Fix only being able to play a card once bug.
-    Fix wrong suit color bug.
     Implement networking.
+    Add main menu
+    Add settings menu?
 # DONE:
     More OOP
     Logically  add client piles
@@ -9,5 +10,6 @@
     Visually add client piles.
     Allow mechanic functions to work with both the server and client.
     Fix window closing bug.
-# IGNORED:
+    Fix wrong suit color bug.
+# IGNORED?:
     Change protocol from UDP back to TCP.

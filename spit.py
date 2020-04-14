@@ -1,3 +1,6 @@
+#TODO: Make a textbox object for Menu.display() and for Card.display()
+
+
 from random import shuffle
 from constants import *
 from threading import Thread
@@ -15,15 +18,21 @@ window = pygame.display.set_mode((window_width, window_height))
 #Sets the caption in the title-bar
 pygame.display.set_caption('Spit')
 
+
+#Run this in the main control loop in Menu() or Game()
+#TODO: Take the logic statement out of the loop?
 def detect_quit():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
 
+#Main class of the game. Determines whether or not the program is running, and then if the user is in the menu or game.
 class Spit:
+    #This isn't in __init__() because then the child classes couldn't use it.
     playing = True
     def __init__(self):
+        #TODO: Move self.running, self.menu, next to self.playing
         self.running = True
         self.menu = False
         self.main()
@@ -36,9 +45,11 @@ class Spit:
         pygame.quit()
         exit()
 
+#TODO: Make the menu after networking is implemented.
 class Menu(Spit):
     pass
 
+#Sets up Users and window, manages game mechanics too.
 class Game(Spit):
     def __init__(self):
         self.make_deck()
@@ -56,16 +67,23 @@ class Game(Spit):
             self.users[user] = User(self.deck[:31])
             del self.deck[:31]
     def main(self):
+        #This is why Game() is a child of Spit()
         while self.playing:
             window.fill(GRAY)
+            #TODO?: Move detect_quit() out of the function for loop and into this loop?
+            for event in pygame.event.get():
+                pass
             detect_quit()
+            #Displays the game objects of each user.
             self.display()
+            #Updates the display 60 times every second.
             pygame.display.update()
             pygame.time.Clock().tick(60)
     def display(self):
         for user in self.users:
             self.users[user].display(user)
 
+#Makes the objects that can hold Cards and displays them.
 class User:
     pile_spacing = window_width / 6
     hand_spacing = window_width / 3
@@ -76,11 +94,14 @@ class User:
         self.hands = {0:Hand(), 1:Hand()}
     def make_piles(self):
         self.piles = {0:Pile(), 1:Pile(), 2:Pile(), 3:Pile(), 4:Pile()}
+        #Makes each pile have one more card than the last.
         for pile in self.piles:
+            #The variable in this loop is '_' because it is purposely never used.
             for _ in range(pile + 1):
                 self.piles[pile].cards.append(self.deck[0])
                 del self.deck[0]
-            self.piles[pile].flip()
+            #Flips the card on top of each pile.
+            self.piles[pile].cards[-1].flipped = True
     def make_center_pile(self):
         self.center_pile = Pile()
         self.center_pile.cards.append(self.deck[0])
@@ -89,6 +110,8 @@ class User:
     def make_hands(self):
         self.hands = {0:Hand(), 1:Hand()}
     def display(self, factor):
+        # This formula is very important in maintaining symetry
+        # |(Window Height * Factor) - (Window Height * Fraction, not > 1/2)|
         for pile in self.piles:
             self.x_cord = int(self.pile_spacing * (pile + 1))
             self.y_cord = int(abs((window_height * factor) - (window_height * 2/7)))
@@ -101,11 +124,11 @@ class User:
         self.y_cord = int(abs((window_height * factor) - (window_height * 3/7)))
         self.center_pile.display(self.x_cord, self.y_cord)
 
+#Mainly just a 'placeholder' so there are not so many nested lists in User.
 class Pile:
     def __init__(self):
+        #It is easier to set the cards in each pile on a lower level of abstraction than to take them in a parameter.
         self.cards = []
-    def flip(self):
-        self.cards[-1].flipped = True
     def display(self, x_cord, y_cord):
         if self.cards:
             self.cards[-1].display(x_cord, y_cord)
@@ -115,14 +138,15 @@ class Hand:
     height = width
     def __init__(self):
         self.card = None
+        #y_mod is used to move the hand up/down when one of the arrow keys is pressed.
         self.y_mod = 0
     def display(self, x_cord, y_cord):
-
+        #Centers hand on coords
         self.x_cord = int(x_cord - self.width / 2)
         self.y_cord = int(y_cord - self.height / 2 + self.y_mod)
         pygame.draw.rect(window, BLACK, [self.x_cord, self.y_cord, self.width, self.height])
         if self.card:
-                self.card.display(self.x_cord, self.y_cord)
+            self.card.display(self.x_cord, self.y_cord)
 
 class Card:
     width = int(window_height / 12)
@@ -132,20 +156,24 @@ class Card:
         self.face = value_pair[1]
         self.suit = suit
         self.flipped = False
+        #Fix for wrong suit color bug.
+        #\u266* are unicode characters for the suits.
         if self.suit == '\u2660' or self.suit == '\u2663':
             self.color = BLACK
         else:
             self.color = RED
     def display(self, x_cord, y_cord):
+        #Centers card on coords
         self.x_cord = int(x_cord - self.width / 2)
         self.y_cord = int(y_cord - self.height / 2)
         if self.flipped:
             text = self.face + self.suit
-            font = pygame.font.Font('./ibm.ttf', 40)
-            text_box = font.render(text, True, self.color, WHITE)
+            #TODO: Put text stuff in a Textbox class
+            font = pygame.font.Font('./ibm.ttf', 45)
+            textbox = font.render(text, True, self.color, WHITE)
             pygame.draw.rect(window, WHITE, [self.x_cord, self.y_cord, self.width, self.height])
-            window.blit(text_box, (self.x_cord, self.y_cord))
+            window.blit(textbox, (self.x_cord, self.y_cord))
         else:
             pygame.draw.rect(window, BLUE, [self.x_cord, self.y_cord, self.width, self.height])
 
-Spit().__init__
+Spit()

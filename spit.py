@@ -7,16 +7,16 @@ import pickle
 import socket
 
 # Libs made by me
-import lib.mechanics
-import lib.networking
-from lib.constants import *
+import mechanics
+import networking
+from constants import *
 
 # Starts Pygame
 pygame.init()
 
 # Window resolution
-window_width = 256
-window_height = 256
+window_width = 1280
+window_height = 720
 # Sets the window resoloution
 window = pygame.display.set_mode((window_width, window_height))
 # Sets the caption in the title-bar

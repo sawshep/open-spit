@@ -133,25 +133,25 @@ class User:
         # This formula is very important in maintaining symetry
         # |(Window Height * Factor) - (Window Height * Fraction, not > 1/2)|
         for pile in self.piles:
-            self.x_cord = int(self.pile_spacing * (pile + 1))
-            self.y_cord = int(abs((window_height * factor) - (window_height * 2/7)))
-            self.piles[pile].display(self.x_cord, self.y_cord)
+            self.x_coord = int(self.pile_spacing * (pile + 1))
+            self.y_coord = int(abs((window_height * factor) - (window_height * 2/7)))
+            self.piles[pile].display(self.x_coord, self.y_coord)
         for hand in self.hands:
-            self.x_cord = int(self.hand_spacing * (hand + 1))
-            self.y_cord = int(abs((window_height * factor) - (window_height)))
-            self.hands[hand].display(self.x_cord, self.y_cord)
-        self.x_cord = int(window_width / 2)
-        self.y_cord = int(abs((window_height * factor) - (window_height * 3/7)))
-        self.center_pile.display(self.x_cord, self.y_cord)
+            self.x_coord = int(self.hand_spacing * (hand + 1))
+            self.y_coord = int(abs((window_height * factor) - (window_height)))
+            self.hands[hand].display(self.x_coord, self.y_coord)
+        self.x_coord = int(window_width / 2)
+        self.y_coord = int(abs((window_height * factor) - (window_height * 3/7)))
+        self.center_pile.display(self.x_coord, self.y_coord)
 
 # Mainly just a 'placeholder' so there are not so many nested lists in User.
 class Pile:
     def __init__(self):
         # It is easier to set the cards in each pile on a lower level of abstraction than to take them in a parameter.
         self.cards = []
-    def display(self, x_cord, y_cord):
+    def display(self, x_coord, y_coord):
         if self.cards:
-            self.cards[-1].display(x_cord, y_cord)
+            self.cards[-1].display(x_coord, y_coord)
 
 class Hand:
     width = int(window_width / 10)
@@ -160,13 +160,13 @@ class Hand:
         self.card = None
         # y_mod is used to move the hand up/down when one of the arrow keys is pressed.
         self.y_mod = 0
-    def display(self, x_cord, y_cord):
+    def display(self, x_coord, y_coord):
         # Centers hand on coords
-        self.x_cord = int(x_cord - self.width / 2)
-        self.y_cord = int(y_cord - self.height / 2 + self.y_mod)
-        pygame.draw.rect(window, BLACK, [self.x_cord, self.y_cord, self.width, self.height])
+        self.x_coord = int(x_coord - self.width / 2)
+        self.y_coord = int(y_coord - self.height / 2 + self.y_mod)
+        pygame.draw.rect(window, BLACK, [self.x_coord, self.y_coord, self.width, self.height])
         if self.card:
-            self.card.display(self.x_cord, self.y_cord)
+            self.card.display(self.x_coord, self.y_coord)
 
 class Card:
     width = int(window_height / 12)
@@ -182,18 +182,18 @@ class Card:
             self.color = BLACK
         else:
             self.color = RED
-    def display(self, x_cord, y_cord):
+    def display(self, x_coord, y_coord):
         # Centers card on coords
-        self.x_cord = int(x_cord - self.width / 2)
-        self.y_cord = int(y_cord - self.height / 2)
+        self.x_coord = int(x_coord - self.width / 2)
+        self.y_coord = int(y_coord - self.height / 2)
         if self.flipped:
             text = self.face + self.suit
             # TODO: Put text stuff in a Textbox class
             font = pygame.font.Font('./ibm.ttf', int(window_height / 21))
             textbox = font.render(text, True, self.color, WHITE)
-            pygame.draw.rect(window, WHITE, [self.x_cord, self.y_cord, self.width, self.height])
-            window.blit(textbox, (self.x_cord, self.y_cord))
+            pygame.draw.rect(window, WHITE, [self.x_coord, self.y_coord, self.width, self.height])
+            window.blit(textbox, (self.x_coord, self.y_coord))
         else:
-            pygame.draw.rect(window, BLUE, [self.x_cord, self.y_cord, self.width, self.height])
+            pygame.draw.rect(window, BLUE, [self.x_coord, self.y_coord, self.width, self.height])
 
 Spit()

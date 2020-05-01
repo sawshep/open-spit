@@ -6,6 +6,7 @@ valid_keys = [
     pygame.K_RIGHT,
     pygame.K_UP,
     pygame.K_DOWN,
+    pygame.K_KP0,
     pygame.K_a,
     pygame.K_s,
     pygame.K_d,
@@ -20,4 +21,4 @@ def get_keys():
         for valid_key in valid_keys:
             if pygame.key.get_pressed()[valid_key]:
                 pressed_keys.append(valid_key)
-        if pressed_keys: return pressed_keys
+        return pressed_keys

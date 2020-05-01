@@ -2,7 +2,7 @@ import socket
 from threading import Thread
 import pickle
 import mechanics
-port = 31415
+
 
 class Networker:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -37,7 +37,6 @@ class Host(Networker):
 class Client(Networker):
     def __init__(self, addr):
         self.addr = addr
-
         # Hangs until the host receive the package.
         # TODO?: Might cause an infinite wait if there is package loss, put in loop?
         #self.s.sendto(''.encode(), (self.addr))

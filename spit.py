@@ -36,54 +36,54 @@ WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 PORT = 31415
 
-class Networker:
-    '''Sets up the base for a Client or Server to be created'''
-    # The sockets for both Server and Client use UDP.
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    username = input('Enter username:\n>')
+# class Networker:
+#     '''Sets up the base for a Client or Server to be created'''
+#     # The sockets for both Server and Client use UDP.
+#     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     username = input('Enter username:\n>')
 
-    def recv(self, return_addr=False):
-        '''Waits for data from the connected address.
-        It will hang until it receives a packet.'''
-        recv_data, addr = self.s.recvfrom(2048)
-        recv_msg = pickle.loads(recv_data)
-        if return_addr:
-            return (recv_msg, addr)
-        return recv_msg
-    def recv_thread(self):
-        '''Intended to be used in a thread.
-        This works around the hanging of recv() by multithreading it.'''
-        while True:
-            users[1] = self.recv()[0]
+#     def recv(self, return_addr=False):
+#         '''Waits for data from the connected address.
+#         It will hang until it receives a packet.'''
+#         recv_data, addr = self.sock.recvfrom(2048)
+#         recv_msg = pickle.loads(recv_data)
+#         if return_addr:
+#             return (recv_msg, addr)
+#         return recv_msg
+#     def recv_thread(self):
+#         '''Intended to be used in a thread.
+#         This works around the hanging of recv() by multithreading it.'''
+#         while True:
+#             users[1] = self.recv()[0]
 
-class Server(Networker):
-    '''Hosts a socket server on the local machine using UDP'''
-    def __init__(self):
-        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind(('127.0.0.1', PORT))
+# class Server(Networker):
+#     '''Hosts a socket server on the local machine using UDP'''
+#     def __init__(self):
+#         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+#         self.sock.bind(('127.0.0.1', PORT))
 
-        print('Waiting for opponent...')
-        self.opponent, self.addr = self.recv(return_addr=True)
-        print(f'{self.opponent} joined the game')
-        self.send(self.username)
+#         print('Waiting for opponent...')
+#         self.opponent, self.addr = self.recv(return_addr=True)
+#         print(f'{self.opponent} joined the game')
+#         self.send(self.username)
 
-    def send(self, send_msg):
-        '''Encodes and sends data to the connected client'''
-        self.s.sendto(pickle.dumps(send_msg), self.addr)
+#     def send(self, send_msg):
+#         '''Encodes and sends data to the connected client'''
+#         self.s.sendto(pickle.dumps(send_msg), self.addr)
 
-class Client(Networker):
-    '''Connects to Server of the user's choice with UDP'''
-    def __init__(self):
-        self.addr = input('Enter server IP:\n>')
-        print('Connecting...')
-        self.send(self.username)
-        self.s.settimeout(3.0)
-        self.opponent = self.recv()
-        self.s.settimeout(None)
-        print(f'Joined {self.opponent}\'s game')
-    def send(self, send_msg):
-        '''Encoded and sends data to the connected server.'''
-        self.s.sendto(pickle.dumps(send_msg), (self.addr, PORT))
+# class Client(Networker):
+#     '''Connects to Server of the user's choice with UDP'''
+#     def __init__(self):
+#         self.addr = input('Enter server IP:\n>')
+#         print('Connecting...')
+#         self.send(self.username)
+#         self.sock.settimeout(3.0)
+#         self.opponent = self.recv()
+#         self.sock.settimeout(None)
+#         print(f'Joined {self.opponent}\'s game')
+#     def send(self, msg):
+#         '''Encoded and sends data to the connected server.'''
+#         self.sock.sendto(pickle.dumps(msg), (self.addr, PORT))
 
 class Spit:
     '''Controls whether to display Menu or Game'''
@@ -115,19 +115,18 @@ class Game:
     def network_setup(self):
         '''Controls the differences in setup between the server and the client'''
         while True:
-            global users
             self.network = input('Do you want to (join) or (host) a game?\n>')
             if self.network == 'host':
                 self.network = Server()
                 self.deck = self.make_deck()
-                users = self.make_users()
-                self.network.send(users)
+                self.users = self.make_users()
+                self.network.send(self.users)
                 break
             elif self.network == 'join':
                 try:
                     self.network = Client()
                     self.host_users = self.network.recv()
-                    users = {0:self.host_users[1], 1:self.host_users[0]}
+                    self.users = {0:self.host_users[1], 1:self.host_users[0]}
                     break
                 except socket.timeout:
                     print('Failed to connect to the server')
@@ -330,4 +329,4 @@ class Card:
         else:
             pygame.draw.rect(WINDOW, constants.BLUE, [x_coord, y_coord, self.width, self.height])
 
-SPIT = Spit()
+Spit()

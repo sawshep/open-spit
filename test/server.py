@@ -21,6 +21,7 @@ class Server:
             print(error)
         #This is a dictionary of connected client socket objects
         self.clients = {0: None, 1: None}
+        self.ready = False
         self.deck = gamedata.make_deck()
         self.listen()
 

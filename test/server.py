@@ -32,16 +32,17 @@ class Server:
         while True:
             client, address = self.socket.accept()
             client_id = 0 if not self.clients[0] else 1
+            client.send(pickle.dumps(client_id))
+            print(f'Sent ID to {address}')
+            client.send(pickle.dumps(self.deck))
+            print(f'Sent deck to {address}')
             self.clients[client_id] = client
             print(f'{address} connected to the server')
             threading.Thread(target=self.io_thread, args=(client, address, client_id,)).start()
 
     def io_thread(self, client, address, client_id):
         '''Controls the I/O of information for each client socket, and handles disconnects'''
-        client.send(pickle.dumps(client_id))
-        print(f'Sent ID to {address}')
-        client.send(pickle.dumps(self.deck))
-        print(f'Sent deck to {address}')
+
         connected = True
         while connected:
             if self.clients[int(not client_id)]:
@@ -57,7 +58,7 @@ class Server:
                     connected = False
         client.shutdown(socket.SHUT_RDWR)
         client.close()
-        self.clients[client_id] = False
+        self.clients[client_id] = None
         print(f'{address} disconnected')
 
 Server()

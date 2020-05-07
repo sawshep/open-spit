@@ -105,8 +105,6 @@ class Game:
         Calls the display of both User's elements.'''
         timer = pygame.time.Clock()
         while True: 
-            timer.tick(60)
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.networker.close()
@@ -160,5 +158,6 @@ class Game:
                         self.users[user].hands[hand].selected = False
                 self.users[user].keys.clear
             self.screen.display(self.users)
+            timer.tick(60)
 
 Spit()

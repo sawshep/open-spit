@@ -49,7 +49,6 @@ class Server:
                 try:
                     data = client.recv(2048)
                     if data:
-                        print(pickle.loads(data))
                         self.clients[int(not client_id)].send(data)
                     else:
                         connected = False

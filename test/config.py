@@ -8,5 +8,5 @@ CLIENT_PORT = 31415
 SERVER_PORT = 31415
 
 # The game elements won't display properly if this is ridiculously small
-WINDOW_WIDTH = 200
-WINDOW_HEIGHT = 200
+WINDOW_WIDTH = 400
+WINDOW_HEIGHT = 400

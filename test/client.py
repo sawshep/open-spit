@@ -41,3 +41,7 @@ class Client:
             return self.recv()
         except socket.error as error:
             print(error)
+    
+    def close(self):
+        self.socket.shutdown(socket.SHUT_RDWR)
+        self.socket.close()

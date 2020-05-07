@@ -35,13 +35,8 @@ class Spit:
     playing = True
     def __init__(self):
         self.running = True
-        #self.menu = False
         if self.running:
             Game()
-            # if self.menu:
-            #     self.menu = Menu()
-            # elif self.playing:
-            #     self.game = Game()
         pygame.quit()
         exit()
 
@@ -91,9 +86,9 @@ class Screen:
                     [x_coord, y_coord, gamedata.Hand.width, gamedata.Hand.height]
                 )
                 card = hands[hand].card
-                if card:
-                    x_coord = int(x_coord + gamedata.Hand.width / 2)
-                    card.display(x_coord, y_coord)
+                # if card:
+                #     x_coord = int(x_coord + gamedata.Hand.width / 2)
+                #     card.display(x_coord, y_coord)
         pygame.display.update()
 
 class Game:
@@ -108,11 +103,13 @@ class Game:
         '''The main user control loop.
         Sends deck changes to the opponent.
         Calls the display of both User's elements.'''
-        clock = pygame.time.Clock()
-        while True:
-            clock.tick(60)
+        timer = pygame.time.Clock()
+        while True: 
+            timer.tick(60)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.networker.close()
                     pygame.quit()
                     sys.exit()
 
@@ -125,44 +122,43 @@ class Game:
                     if pygame.key.get_pressed()[HANDS[hand]]:
                         self.users[0].keys.held.append(hand)
 
-                for hand in self.users[0].hands:
-                    self.users[0].hands[hand].selected = False
-
-                #Send and receive keys
-                self.users[1].keys = self.networker.network_io(self.users[0].keys)
-
-                #Runs game logic/mechanics for each user
-                for user in self.users:
-                    keys = self.users[user].keys
-                    if len(keys.held) == 1:
-                        hand = keys.held[0]
-                        if hand == 2:
-                            for hand in range(2):
-                                self.users[user].hands[hand].selected = True
-                            if self.users[user].hands[0].card is None or self.users[user].hands[1].card is None:
-                                if len(keys.pressed) == 1:
-                                    pile = keys.pressed[0]
-                                    self.users[user].piles[pile].cards[-1].flipped = True
-                        else:
+            self.users[1].keys = self.networker.network_io(self.users[0].keys)
+            for hand in self.users[0].hands:
+                self.users[0].hands[hand].selected = False
+            #Runs game logic/mechanics for each user
+            for user in self.users:
+                keys = self.users[user].keys
+                print(keys.held)
+                if len(keys.held) == 1:
+                    hand = keys.held[0]
+                    if hand == 2:
+                        for hand in range(2):
                             self.users[user].hands[hand].selected = True
+                        hands = self.users[user].hands
+                        if hands[0].card is None or hands[1].card is None:
                             if len(keys.pressed) == 1:
                                 pile = keys.pressed[0]
-                                if self.users[user].piles[pile].cards:
-                                    if self.users[user].hands[hand].card is None:
-                                        if self.users[user].piles[pile].cards[-1].flipped:
-                                            self.users[user].hands[hand].card = self.users[user].piles[pile].cards[-1]
-                                            del self.users[user].piles[pile].cards[-1]
-                                    else:
-                                        if self.users[user].piles[pile].cards[-1].value == self.users[user].hands[hand].card.value:
-                                            self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
-                                            self.users[user].hands[hand].card = None
-                                elif self.users[user].hands[hand].card:
-                                    self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
-                                    self.users[user].hands[hand].card = None
+                                self.users[user].piles[pile].cards[-1].flipped = True
                     else:
-                        for hand in self.users[user].hands:
-                            self.users[user].hands[hand].selected = False
-                    self.users[user].keys.clear()
+                        self.users[user].hands[hand].selected = True
+                        if len(keys.pressed) == 1:
+                            pile = keys.pressed[0]
+                            if self.users[user].piles[pile].cards:
+                                if self.users[user].hands[hand].card is None:
+                                    if self.users[user].piles[pile].cards[-1].flipped:
+                                        self.users[user].hands[hand].card = self.users[user].piles[pile].cards[-1]
+                                        del self.users[user].piles[pile].cards[-1]
+                                else:
+                                    if self.users[user].piles[pile].cards[-1].value == self.users[user].hands[hand].card.value:
+                                        self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
+                                        self.users[user].hands[hand].card = None
+                            elif self.users[user].hands[hand].card:
+                                self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
+                                self.users[user].hands[hand].card = None
+                else:
+                    for hand in self.users[user].hands:
+                        self.users[user].hands[hand].selected = False
+                self.users[user].keys.clear
             self.screen.display(self.users)
 
 Spit()

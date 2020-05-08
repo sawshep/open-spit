@@ -8,8 +8,6 @@ import socket
 import config
 import gamedata
 
-PORT = 31414
-
 class Server:
     '''TCP socket server for game clients to cennect to.'''
     def __init__(self):

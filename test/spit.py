@@ -106,57 +106,60 @@ class Game:
         timer = pygame.time.Clock()
         while True: 
             for event in pygame.event.get():
+                # Detects quitting
                 if event.type == pygame.QUIT:
                     self.networker.close()
                     pygame.quit()
                     sys.exit()
 
+                # Detects pile keypresses
                 if event.type == pygame.KEYDOWN:
                     for pile in range(5):
                         if PRESSED_CONTROLS[pile] == event.key:
                             self.users[0].keys.pressed.append(pile)
 
+                # Detects hand keyholds
                 for hand in range(3):
                     if pygame.key.get_pressed()[HANDS[hand]]:
                         self.users[0].keys.held.append(hand)
 
-            self.users[1].keys = self.networker.network_io(self.users[0].keys)
-            for hand in self.users[0].hands:
-                self.users[0].hands[hand].selected = False
-            #Runs game logic/mechanics for each user
-            for user in self.users:
-                keys = self.users[user].keys
-                print(keys.held)
-                if len(keys.held) == 1:
-                    hand = keys.held[0]
-                    if hand == 2:
-                        for hand in range(2):
+                self.users[1].keys = self.networker.network_io(self.users[0].keys)
+                for hand in self.users[0].hands:
+                    self.users[0].hands[hand].selected = False
+                #Runs game logic/mechanics for each user
+                for user in self.users:
+                    keys = self.users[user].keys
+                    print(keys.held)
+                    if len(keys.held) == 1:
+                        hand = keys.held[0]
+                        if hand == 2:
+                            for hand in range(2):
+                                self.users[user].hands[hand].selected = True
+                            hands = self.users[user].hands
+                            if hands[0].card is None or hands[1].card is None:
+                                if len(keys.pressed) == 1:
+                                    pile = keys.pressed[0]
+                                    self.users[user].piles[pile].cards[-1].flipped = True
+                        else:
                             self.users[user].hands[hand].selected = True
-                        hands = self.users[user].hands
-                        if hands[0].card is None or hands[1].card is None:
                             if len(keys.pressed) == 1:
                                 pile = keys.pressed[0]
-                                self.users[user].piles[pile].cards[-1].flipped = True
+                                if self.users[user].piles[pile].cards:
+                                    if self.users[user].hands[hand].card is None:
+                                        if self.users[user].piles[pile].cards[-1].flipped:
+                                            self.users[user].hands[hand].card = self.users[user].piles[pile].cards[-1]
+                                            del self.users[user].piles[pile].cards[-1]
+                                    else:
+                                        if self.users[user].piles[pile].cards[-1].value == self.users[user].hands[hand].card.value:
+                                            self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
+                                            self.users[user].hands[hand].card = None
+                                elif self.users[user].hands[hand].card:
+                                    self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
+                                    self.users[user].hands[hand].card = None
                     else:
-                        self.users[user].hands[hand].selected = True
-                        if len(keys.pressed) == 1:
-                            pile = keys.pressed[0]
-                            if self.users[user].piles[pile].cards:
-                                if self.users[user].hands[hand].card is None:
-                                    if self.users[user].piles[pile].cards[-1].flipped:
-                                        self.users[user].hands[hand].card = self.users[user].piles[pile].cards[-1]
-                                        del self.users[user].piles[pile].cards[-1]
-                                else:
-                                    if self.users[user].piles[pile].cards[-1].value == self.users[user].hands[hand].card.value:
-                                        self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
-                                        self.users[user].hands[hand].card = None
-                            elif self.users[user].hands[hand].card:
-                                self.users[user].piles[pile].cards.append(self.users[user].hands[hand].card)
-                                self.users[user].hands[hand].card = None
-                else:
-                    for hand in self.users[user].hands:
-                        self.users[user].hands[hand].selected = False
-                self.users[user].keys.clear
+                        for hand in self.users[user].hands:
+                            self.users[user].hands[hand].selected = False
+                    self.users[user].keys.clear()
             self.screen.display(self.users)
             timer.tick(60)
 

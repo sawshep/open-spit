@@ -9,14 +9,13 @@ import config
 import gamedata
 
 PORT = 31414
-ADDRESS = 'localhost'
 
 class Server:
     '''TCP socket server for game clients to cennect to.'''
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.socket.bind((ADDRESS, config.SERVER_PORT))
+            self.socket.bind(('', config.SERVER_PORT))
         except socket.error as error:
             print(error)
         #This is a dictionary of connected client socket objects

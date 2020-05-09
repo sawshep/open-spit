@@ -118,10 +118,10 @@ class Game:
                         if PRESSED_CONTROLS[pile] == event.key:
                             self.users[0].keys.pressed.append(pile)
 
-                # Detects hand keyholds
-                for hand in range(3):
-                    if pygame.key.get_pressed()[HANDS[hand]]:
-                        self.users[0].keys.held.append(hand)
+            # Detects hand keyholds
+            for hand in range(3):
+                if pygame.key.get_pressed()[HANDS[hand]]:
+                    self.users[0].keys.held.append(hand)
 
             self.users[1].keys = self.networker.network_io(self.users[0].keys)
             for hand in self.users[0].hands:

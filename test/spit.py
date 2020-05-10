@@ -56,19 +56,14 @@ class Screen:
             for pile in piles:
                 cards = piles[pile].cards
                 if cards:
-                    x_coord = int(pile_spacing * (pile + 1))
-                    y_coord = int(abs((gamedata.Card.height * user) - (gamedata.Card.height * 5/7)))
-                    x_coord = int(x_coord - gamedata.Card.width / 2)
-                    y_coord = int(y_coord - gamedata.Card.height / 2)
+                    x_coord = int((pile_spacing * (pile + 1)) - gamedata.Card.width / 2)
+                    y_coord = int((abs((self.height * user) - (self.height * 5/7))) - gamedata.Card.height / 2)
                     card = cards[-1]
                     if card.flipped:
-                        text = card.face + card.suit
                         font = pygame.font.Font('./ibm.ttf', card.font_size)
+                        text = card.face + card.suit
                         textbox = font.render(text, True, card.color, constants.WHITE)
-                        pygame.draw.rect(
-                            self.window, constants.WHITE,
-                            [x_coord, y_coord, card.width, card.height]
-                        )
+                        pygame.draw.rect(self.window, constants.WHITE, [x_coord, y_coord, card.width, card.height])
                         self.window.blit(textbox, (x_coord, y_coord))
                     else:
                         pygame.draw.rect(
@@ -86,9 +81,15 @@ class Screen:
                     [x_coord, y_coord, gamedata.Hand.width, gamedata.Hand.height]
                 )
                 card = hands[hand].card
-                # if card:
-                #     x_coord = int(x_coord + gamedata.Hand.width / 2)
-                #     card.display(x_coord, y_coord)
+                if card:
+                    text = card.face + card.suit
+                    font = pygame.font.Font('./ibm.ttf', card.font_size)
+                    textbox = font.render(text, True, card.color, constants.WHITE)
+                    pygame.draw.rect(
+                        self.window, constants.WHITE,
+                        [x_coord, y_coord, card.width, card.height]
+                    )
+                    self.window.blit(textbox, (x_coord, y_coord))
         pygame.display.update()
 
 class Game:
@@ -129,7 +130,6 @@ class Game:
             #Runs game logic/mechanics for each user
             for user in self.users:
                 keys = self.users[user].keys
-                print(keys.held)
                 if len(keys.held) == 1:
                     hand = keys.held[0]
                     if hand == 2:

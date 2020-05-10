@@ -15,9 +15,8 @@ class Client:
         print(f'You are client {self.client_id}')
         self.deck = self.recv()
         if self.client_id == 1:
-            self.temp_deck = self.deck[:31]
-            del self.deck[:31]
-            self.deck += self.temp_deck
+            self.deck = self.deck[len(self.deck) // 2:] + self.deck[:len(self.deck) // 2]
+        print(f'Size of deck received {len(self.deck)}')
         print('Received deck')
 
     def connect(self):

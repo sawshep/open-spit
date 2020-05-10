@@ -52,7 +52,6 @@ class Server:
                 except socket.error as error:
                     print(error)
                     connected = False
-        client.shutdown(socket.SHUT_RDWR)
         client.close()
         self.clients[client_id] = None
         print(f'{address} disconnected')

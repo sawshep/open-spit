@@ -12,14 +12,11 @@ def make_deck():
         for value_pair in constants.VALUE_PAIRS:
             deck.append(Card(value_pair, suit))
     random.shuffle(deck)
-    print(len(deck))
     return deck
 
 def make_users(deck):
     '''Creates user objects from a server-provided deck'''
     temp_deck = deck
-    print(str(len(deck) / 2))
-    print(deck)
     users = {0: User(deck[:len(deck) // 2]), 1: User(deck[len(deck) // 2:])}
     for user in users:
         users[user] = User(deck[:26])
@@ -84,7 +81,7 @@ class Card:
     Can be displayed.'''
     width = int(config.WINDOW_HEIGHT / 12)
     height = int(width * 3.5/2.5)
-    font_size = int(config.WINDOW_HEIGHT / 20)
+    font_size = int(config.WINDOW_HEIGHT / 21)
     def __init__(self, value_pair, suit):
         self.value = value_pair[0]
         self.face = value_pair[1]

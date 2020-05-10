@@ -51,6 +51,17 @@ class Screen:
         '''Displays things'''
         self.window.fill(constants.GRAY)
         for user in users:
+            cards = users[user].center_pile.cards
+            if cards:
+                x_coord = int(self.width / 2 - gamedata.Card.width / 2)
+                y_coord = int((abs((self.height * user) - (self.height * 4/7))) - gamedata.Card.height / 2)
+                card = cards[-1]
+                font = pygame.font.Font('./ibm.ttf', card.font_size)
+                text = card.face + card.suit
+                textbox = font.render(text, True, card.color, constants.WHITE)
+                pygame.draw.rect(self.window, constants.WHITE, [x_coord, y_coord, card.width, card.height])
+                self.window.blit(textbox, (x_coord, y_coord))
+            
             piles = users[user].piles
             pile_spacing = self.width / (len(piles) + 1)
             for pile in piles:
@@ -74,8 +85,7 @@ class Screen:
             hand_spacing = self.width / (len(hands) + 1)
             for hand in hands:
                 x_coord = int(hand_spacing * (hand + 1))
-                y_coord = int(abs(self.height * user - self.height))
-                y_coord = int((y_coord- gamedata.Hand.height / 4) + (gamedata.Hand.height * user - gamedata.Hand.y_mod) * hands[hand].selected)
+                y_coord = int(((abs(self.height * user - self.height)) - gamedata.Hand.height / 4) + (gamedata.Hand.height * user - gamedata.Hand.y_mod) * hands[hand].selected)
                 pygame.draw.rect(
                     self.window, constants.BLACK,
                     [x_coord, y_coord, gamedata.Hand.width, gamedata.Hand.height]

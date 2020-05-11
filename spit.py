@@ -127,25 +127,29 @@ class Game:
         Sends deck changes to the opponent.
         Calls the display of both User's elements.'''
         timer = pygame.time.Clock()
-        while True:
-            # The idea to detect quitting events was found in the Pygame official documentation
-            for event in pygame.event.get():
-                # Detects quitting
-                if event.type == pygame.QUIT:
-                    self.networker.close()
-                    pygame.quit()
-                    sys.exit()
 
+        while True:
+            # Detects hand keyholds
+            for hand in range(3):
+                if pygame.key.get_pressed()[HANDS[hand]]:
+                    self.users[0].keys.held.append(hand)
+
+            for event in pygame.event.get():
                 # Detects pile keypresses
                 if event.type == pygame.KEYDOWN:
                     for key in range(8):
                         if PRESSED_CONTROLS[key] == event.key:
                             self.users[0].keys.pressed.append(key)
 
-            # Detects hand keyholds
-            for hand in range(3):
-                if pygame.key.get_pressed()[HANDS[hand]]:
-                    self.users[0].keys.held.append(hand)
+                # The idea for this section was found in the official Pygame documentation
+                # It detects if the user exits the window
+                #############################
+                # Detects quitting
+                if event.type == pygame.QUIT:
+                    self.networker.close()
+                    pygame.quit()
+                    sys.exit()
+                #############################
 
             self.users[1].keys = self.networker.network_io(self.users[0].keys)
             for hand in self.users[0].hands:

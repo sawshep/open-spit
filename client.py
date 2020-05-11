@@ -1,6 +1,7 @@
 '''This module contains the Client class,
 which sends and receives data from the socket server of the uesr's choice'''
 
+# From Python standard library
 import socket
 import pickle
 import config

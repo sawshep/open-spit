@@ -1,7 +1,8 @@
 '''Holds game data that does not rely on Pygame'''
-
+# From the Python standard library
 import random
 
+# My modules
 import config
 import constants
 

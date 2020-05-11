@@ -1,9 +1,11 @@
 '''The main module that actually runs the game'''
-
+# From Python standard library
 import sys
+
+# This is not part of the standard library
 import pygame
 
-#My modules
+# My modules
 import constants
 import config
 import client

@@ -1,10 +1,12 @@
 '''This module holds the Server class,
 which is used to establish connection between 2 clients using TCP sockets'''
 
+# From python standard library
 import threading
 import pickle
 import socket
 
+# My libraries
 import config
 import gamedata
 

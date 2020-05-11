@@ -179,22 +179,22 @@ class Game:
                                 elif self.users[user].hands[hand].card:
                                     self.users[user].piles[pile].cards.append(hand_card)
                                     self.users[user].hands[hand].card = None
-                            elif key in range(6, 7):
-                                if hand_card:
-                                    if pile == 5:
-                                        pile_cards = self.users[user].center_pile.cards
-                                        if pile_cards:
-                                            value_diff = abs(pile_cards[-1].value - hand_card.value)
-                                            if value_diff == 1 or value_diff == 12:
-                                                self.users[user].center_pile.cards.append(hand_card)
-                                                self.users[user].hands[hand].card = None
-                                    elif pile == 6:
-                                        pile_cards = self.users[int(not user)].center_pile.cards
-                                        if pile_cards:
-                                            value_diff = abs(pile_cards[-1].value - hand_card.value)
-                                            if value_diff == 1 or value_diff == 12:
-                                                self.users[int(not user)].center_pile.cards.append(hand_card)
-                                                self.users[user].hands[hand].card = None
+                            #elif key in range(5, 7):
+                            elif hand_card:
+                                if key == 5:
+                                    pile_cards = self.users[user].center_pile.cards
+                                    if pile_cards:
+                                        value_diff = abs(pile_cards[-1].value - hand_card.value)
+                                        if value_diff == 1 or value_diff == 12:
+                                            self.users[user].center_pile.cards.append(hand_card)
+                                            self.users[user].hands[hand].card = None
+                                elif key == 6:
+                                    pile_cards = self.users[int(not user)].center_pile.cards
+                                    if pile_cards:
+                                        value_diff = abs(pile_cards[-1].value - hand_card.value)
+                                        if value_diff == 1 or value_diff == 12:
+                                            self.users[int(not user)].center_pile.cards.append(hand_card)
+                                            self.users[user].hands[hand].card = None
                 elif len(keys.pressed) == 1:
                     key = keys.pressed[0]
                     if key == 7:

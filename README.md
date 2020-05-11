@@ -1,7 +1,3 @@
-# Which file?
-    Currently, only spit.py has the game mechanics implemented, but testing.py has fewer bugs.
-    Both files rely on ibm.ttf.
-
 # Installation:
     1. Install Python 3
     2. Install Pygame
@@ -25,3 +21,5 @@
   
     Hold Keypad 0 to enter flip mode.
     Press A, S, D, F, or Spacebar to flip up a face-down card from piles 1-5, respectively.
+
+    Press R once you are ready to draw a card and play!

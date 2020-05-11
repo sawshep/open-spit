@@ -12,7 +12,7 @@ import config
 import gamedata
 
 class Server:
-    '''TCP socket server for game clients to cennect to.'''
+    '''TCP socket server for game clients to connect to.'''
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind(('', config.SERVER_PORT))

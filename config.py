@@ -1,4 +1,5 @@
-'''Change your game settings in this file.'''
+'''config.py
+Change your game settings in this file.'''
 
 # Default is 31415
 # The port your client tries to connect to the server with

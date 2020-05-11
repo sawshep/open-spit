@@ -1,4 +1,5 @@
-'''Various constants that are utilized in different modules across the whole program'''
+'''constants.py
+Various constants that are utilized in different modules across the whole program'''
 
 #Unicode characters for suits
 SUITS = [

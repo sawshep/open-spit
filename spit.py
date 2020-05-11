@@ -1,4 +1,6 @@
-'''The main module that actually runs the game'''
+'''spit.py
+The main module that actually runs the game.
+It is the only file that requires Pygame.'''
 # From Python standard library
 import sys
 
@@ -96,7 +98,6 @@ class Screen:
             for hand in hands:
                 x_coord = int(hand_spacing * (hand + 1) - gamedata.Hand.width / 2)
                 y_coord = int((((abs(self.height * user - self.height)) - gamedata.Hand.height / 4) + (gamedata.Hand.height * user - gamedata.Hand.y_mod) * hands[hand].selected) - gamedata.Hand.height / 2)
-                # wip: y_coord = int(      abs(  user(self.height) - user(hands[hand].selected * hands[hand].y_mod) - self.height  ) - (hands[hand].height / 2)        )
                 pygame.draw.rect(
                     self.window, constants.BLACK,
                     [x_coord, y_coord, gamedata.Hand.width, gamedata.Hand.height]
@@ -127,6 +128,7 @@ class Game:
         Calls the display of both User's elements.'''
         timer = pygame.time.Clock()
         while True:
+            # The idea to detect quitting events was found in the Pygame official documentation
             for event in pygame.event.get():
                 # Detects quitting
                 if event.type == pygame.QUIT:
@@ -148,7 +150,7 @@ class Game:
             self.users[1].keys = self.networker.network_io(self.users[0].keys)
             for hand in self.users[0].hands:
                 self.users[0].hands[hand].selected = False
-            #Runs game logic/mechanics for each user
+            # Runs game logic/mechanics for each user
             for user in self.users:
                 keys = self.users[user].keys
                 if len(keys.held) == 1:
@@ -181,7 +183,6 @@ class Game:
                                 elif self.users[user].hands[hand].card:
                                     self.users[user].piles[pile].cards.append(hand_card)
                                     self.users[user].hands[hand].card = None
-                            #elif key in range(5, 7):
                             elif hand_card:
                                 if key == 5:
                                     pile_cards = self.users[user].center_pile.cards

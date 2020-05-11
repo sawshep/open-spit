@@ -1,4 +1,6 @@
-'''Holds game data that does not rely on Pygame'''
+'''gamedata.py
+Holds game data that does not rely on Pygame'''
+
 # From the Python standard library
 import random
 
@@ -48,15 +50,6 @@ class User:
             # Flips the card on top of each pile.
             piles[pile].cards[-1].flipped = True
         return piles
-    # def make_center_pile(self):
-    #     '''The center pile is the pile that the users can play their cards on.
-    #     It can start with zero or one cards.
-    #     It can have any positive number of cards.'''
-    #     center_pile = Pile()
-    #     center_pile.cards.append(self.deck[0])
-    #     center_pile.cards[-1].flipped = True
-    #     del self.deck[0]
-    #     return center_pile
 
 class Pile:
     '''A place holder for a list of cards.
@@ -79,16 +72,18 @@ class Hand:
         self.selected = False
 
 class Card:
-    '''Each card has a value, a suit, and a color.
-    Can be displayed.'''
+    '''Each card has a value, a suit, and a color.'''
     width = int(config.WINDOW_HEIGHT / 12)
     height = int(width * 3.5/2.5)
     font_size = int(config.WINDOW_HEIGHT / 21)
     def __init__(self, value_pair, suit):
+        # Value is the actual numeric value for each card, so a Jack would be 11
         self.value = value_pair[0]
+        # This is the character that is displayed on the actual card (A-K)
         self.face = value_pair[1]
         self.suit = suit
         self.flipped = False
+        # The \u things are unicode characters for spades and clubs
         if self.suit == '\u2660' or self.suit == '\u2663':
             self.color = constants.BLACK
         else:

@@ -1,12 +1,13 @@
-'''This module holds the Server class,
-which is used to establish connection between 2 clients using TCP sockets'''
+'''server.py
+This module holds the Server class,
+which is used to establish connection between 2 clients using TCP sockets.'''
 
-# From python standard library
+# From Python standard library
 import threading
 import pickle
 import socket
 
-# My libraries
+# My modules
 import config
 import gamedata
 
@@ -14,10 +15,7 @@ class Server:
     '''TCP socket server for game clients to cennect to.'''
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.socket.bind(('', config.SERVER_PORT))
-        except socket.error as error:
-            print(error)
+        self.socket.bind(('', config.SERVER_PORT))
         #This is a dictionary of connected client socket objects
         self.clients = {0: None, 1: None}
         self.ready = False
@@ -39,9 +37,9 @@ class Server:
             print(f'{address} connected to the server')
             threading.Thread(target=self.io_thread, args=(client, address, client_id,)).start()
 
+    # The idea for threading input/output for each connected user came from the official socket documentation
     def io_thread(self, client, address, client_id):
         '''Controls the I/O of information for each client socket, and handles disconnects'''
-
         connected = True
         while connected:
             if self.clients[int(not client_id)]:
@@ -51,8 +49,7 @@ class Server:
                         self.clients[int(not client_id)].send(data)
                     else:
                         connected = False
-                except socket.error as error:
-                    print(error)
+                except:
                     connected = False
         client.close()
         self.clients[client_id] = None

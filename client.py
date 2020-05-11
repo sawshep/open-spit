@@ -1,5 +1,7 @@
-'''This module contains the Client class,
-which sends and receives data from the socket server of the uesr's choice'''
+'''client.py
+This module contains the Client class,
+which sends and receives data from the socket server of the uesr's choice.
+I found the idea to send and receive objects using pickle from the official pickle doccumention.'''
 
 # From Python standard library
 import socket
@@ -35,12 +37,8 @@ class Client:
 
     def network_io(self, send):
         '''Handles the sending and receiving of data from the server.'''
-        try:
-            self.socket.send(pickle.dumps(send))
-            return self.recv()
-        except socket.error as error:
-            print(error)
-
+        self.socket.send(pickle.dumps(send))
+        return self.recv()
     def close(self):
         '''Closes the socket'''
         # self.socket.shutdown(socket.SHUT_RDWR)

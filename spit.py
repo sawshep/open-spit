@@ -194,7 +194,6 @@ class Game:
                                             self.users[int(not user)].center_pile.cards.append(hand_card)
                                             self.users[user].hands[hand].card = None
                 elif len(keys.pressed) == 1:
-                    print(keys.pressed)
                     key = keys.pressed[0]
                     if key == 7:
                         self.users[user].ready = not self.users[user].ready

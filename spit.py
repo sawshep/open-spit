@@ -55,10 +55,10 @@ class Screen:
         self.window.fill(constants.GRAY)
         for user in users:
             if users[user].ready:
-                width = int(self.width / 12)
+                width = int(self.width / 16)
                 height = width
                 x_coord = int(self.width / 2 - width / 2)
-                y_coord = int(self.height / 2 - height / 2)
+                y_coord = int((abs((self.height * user) - (self.height * 7/7))) - height / 2)
                 pygame.draw.rect(self.window, constants.GREEN, [x_coord, y_coord, width, height])
             cards = users[user].center_pile.cards
             if cards:
@@ -92,8 +92,8 @@ class Screen:
             hands = users[user].hands
             hand_spacing = self.width / (len(hands) + 1)
             for hand in hands:
-                x_coord = int(hand_spacing * (hand + 1))
-                y_coord = int(((abs(self.height * user - self.height)) - gamedata.Hand.height / 4) + (gamedata.Hand.height * user - gamedata.Hand.y_mod) * hands[hand].selected)
+                x_coord = int(hand_spacing * (hand + 1) - gamedata.Hand.width / 2)
+                y_coord = int((((abs(self.height * user - self.height)) - gamedata.Hand.height / 4) + (gamedata.Hand.height * user - gamedata.Hand.y_mod) * hands[hand].selected) - gamedata.Hand.height / 2)
                 pygame.draw.rect(
                     self.window, constants.BLACK,
                     [x_coord, y_coord, gamedata.Hand.width, gamedata.Hand.height]
@@ -178,34 +178,37 @@ class Game:
                                 elif self.users[user].hands[hand].card:
                                     self.users[user].piles[pile].cards.append(hand_card)
                                     self.users[user].hands[hand].card = None
-                            elif key in range(5, 7):
-                                if hand_card:
-                                    if pile == 5:
-                                        pile_cards = self.users[user].center_pile.cards
-                                        if pile_cards:
-                                            value_diff = abs(pile_cards[-1].value - hand_card.value)
-                                            if value_diff == 1 or value_diff == 12:
-                                                self.users[user].center_pile.cards.append(hand_card)
-                                                self.users[user].hands[hand].card = None
-                                    elif pile == 6:
-                                        pile_cards = self.users[int(not user)].center_pile.cards
-                                        if pile_cards:
-                                            value_diff = abs(pile_cards[-1].value - hand_card.value)
-                                            if value_diff == 1 or value_diff == 12:
-                                                self.users[int(not user)].center_pile.cards.append(hand_card)
-                                                self.users[user].hands[hand].card = None
-                            elif key == 8:
-                                self.users[user].ready = not self.users[user].ready
+                            elif hand_card:
+                                if pile == 5:
+                                    pile_cards = self.users[user].center_pile.cards
+                                    if pile_cards:
+                                        value_diff = abs(pile_cards[-1].value - hand_card.value)
+                                        if value_diff == 1 or value_diff == 12:
+                                            self.users[user].center_pile.cards.append(hand_card)
+                                            self.users[user].hands[hand].card = None
+                                elif pile == 6:
+                                    pile_cards = self.users[int(not user)].center_pile.cards
+                                    if pile_cards:
+                                        value_diff = abs(pile_cards[-1].value - hand_card.value)
+                                        if value_diff == 1 or value_diff == 12:
+                                            self.users[int(not user)].center_pile.cards.append(hand_card)
+                                            self.users[user].hands[hand].card = None
+                elif len(keys.pressed) == 1:
+                    print(keys.pressed)
+                    key = keys.pressed[0]
+                    if key == 7:
+                        self.users[user].ready = not self.users[user].ready
                 else:
                     for hand in self.users[user].hands:
                         self.users[user].hands[hand].selected = False
                 self.users[user].keys.clear()
-            if self.users[0].ready and self.users[1]:
+            if self.users[0].ready and self.users[1].ready:
                 if self.users[0].deck and self.users[1].deck:
                     for user in self.users:
                         deck = self.users[user].deck
                         self.users[user].center_pile.cards.append(deck[-1])
                         del self.users[user].deck[-1]
+                        self.users[user].ready = False
 
             self.screen.display(self.users)
             timer.tick(60)

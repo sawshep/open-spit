@@ -1,7 +1,3 @@
-# Which file?
-    Currently, only spit.py has the game mechanics implemented, but testing.py has fewer bugs.
-    Both files rely on ibm.ttf.
-
 # Installation:
     1. Install Python 3
     2. Install Pygame

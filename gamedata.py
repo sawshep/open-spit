@@ -28,9 +28,10 @@ class User:
     def __init__(self, cards):
         self.deck = cards
         self.piles = self.make_piles()
-        self.center_pile = self.make_center_pile()
+        self.center_pile = Pile()
         self.hands = {0:Hand(), 1:Hand()}
         self.keys = Keys()
+        self.ready = False
     def make_piles(self):
         '''Distributes the cards assigned to the users among the piles.
         There are five piles.
@@ -46,15 +47,15 @@ class User:
             # Flips the card on top of each pile.
             piles[pile].cards[-1].flipped = True
         return piles
-    def make_center_pile(self):
-        '''The center pile is the pile that the users can play their cards on.
-        It can start with zero or one cards.
-        It can have any positive number of cards.'''
-        center_pile = Pile()
-        center_pile.cards.append(self.deck[0])
-        center_pile.cards[-1].flipped = True
-        del self.deck[0]
-        return center_pile
+    # def make_center_pile(self):
+    #     '''The center pile is the pile that the users can play their cards on.
+    #     It can start with zero or one cards.
+    #     It can have any positive number of cards.'''
+    #     center_pile = Pile()
+    #     center_pile.cards.append(self.deck[0])
+    #     center_pile.cards[-1].flipped = True
+    #     del self.deck[0]
+    #     return center_pile
 
 class Pile:
     '''A place holder for a list of cards.

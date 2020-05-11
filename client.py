@@ -16,7 +16,6 @@ class Client:
         self.deck = self.recv()
         if self.client_id == 1:
             self.deck = self.deck[len(self.deck) // 2:] + self.deck[:len(self.deck) // 2]
-        print(f'Size of deck received {len(self.deck)}')
         print('Received deck')
 
     def connect(self):
@@ -40,7 +39,8 @@ class Client:
             return self.recv()
         except socket.error as error:
             print(error)
-    
+
     def close(self):
-        self.socket.shutdown(socket.SHUT_RDWR)
+        '''Closes the socket'''
+        # self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()

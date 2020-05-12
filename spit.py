@@ -128,6 +128,8 @@ class Game:
         Calls the display of both User's elements.'''
         timer = pygame.time.Clock()
 
+        # ALGORITHM
+        #########################################################
         while True:
             # Detects hand keyholds
             for hand in range(3):
@@ -140,6 +142,7 @@ class Game:
                     for key in range(8):
                         if PRESSED_CONTROLS[key] == event.key:
                             self.users[0].keys.pressed.append(key)
+        ##########################################################
 
                 # The idea for this section was found in the official Pygame documentation
                 # It detects if the user exits the window

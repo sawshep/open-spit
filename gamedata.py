@@ -70,7 +70,8 @@ class Hand:
     def __init__(self):
         self.card = None
         self.selected = False
-
+# ABSTRACTION
+#####################################################
 class Card:
     '''Each card has a value, a suit, and a color.'''
     width = int(config.WINDOW_HEIGHT / 12)
@@ -88,6 +89,7 @@ class Card:
             self.color = constants.BLACK
         else:
             self.color = constants.RED
+#####################################################
 
 class Keys:
     '''Hold the pressed keys for each User'''

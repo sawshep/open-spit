@@ -1,7 +1,13 @@
-# Installation:
-    1. Install Python 3
-    2. Install Pygame
-    3. Run spit.py
+# Compiled Version
+    The binaries provided in `bin` were compiled with Nuitka
+    Just clone the repo and run the binary for your system!
+
+# Interpereted Version:
+    1. Make sure you have Python 3
+    2. Clone the repo `git clone https://github.com/sawshep/spit`
+    3. Change directory to the repo `cd spit`
+    4. Install dependencies `pip3 install -r requirements.txt`
+    5. Run `python3 src/spit.py`
 
 # How to play:
     Spit is a 2-player, reflex-based game.
@@ -18,8 +24,15 @@
 # Controls:
     Hold the Left or Right arrow to enter pick-up/put-down mode.
     Press A, S, D, F, or Spacebar to pick-up/put-down a card from/on decks 1-5, respectively.
-  
+
     Hold Keypad 0 to enter flip mode.
     Press A, S, D, F, or Spacebar to flip up a face-down card from piles 1-5, respectively.
 
     Press R once you are ready to draw a card and play!
+
+# Configuration
+    The config file is located in `src/config.py`. If you wish to use a custom configuration with the compiled version, you must compile the binary yourself after editing the config file.
+
+# Hosting a Server
+    To host a server, you must first port forward. By default, port 31415 is used.
+    Once the server is running, you must give your opponent your public IPv4 address so he/she can connect.

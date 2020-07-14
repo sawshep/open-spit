@@ -1,5 +1,6 @@
 # Compiled Version
 At this moment, there is no compiled version of `spit.py` due to a circular import error with `numpy` in Nuitka
+
 ~~The binaries provided in `bin` were compiled with Nuitka
 Just clone the repo and run the binary for your system!~~
 

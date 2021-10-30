@@ -6,6 +6,8 @@ horribly organized, scarecly commented program that barely worked. The only
 purpose I'd recommend for this is as an antithesis of good program design, but
 I've decided to unprivate the repository in case anyone cares to look at it.
 
+I'll probably do a complete rewrite of the card game in a different language.
+
 > # Compiled Version
 > At this moment, there is no compiled version of `spit.py` due to a circular import error with `numpy` in Nuitka.
 > 
